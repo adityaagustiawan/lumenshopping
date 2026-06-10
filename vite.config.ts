@@ -18,7 +18,6 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["react", "react-dom", "lucide-react"],
             recharts: ["recharts"],
             radix: [
               "@radix-ui/react-dropdown-menu",
