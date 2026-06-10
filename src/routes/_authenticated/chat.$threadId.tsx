@@ -26,6 +26,7 @@ function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -39,9 +40,10 @@ function ChatPage() {
     inputRef.current?.focus();
   }, []);
 
-  // Coze API Integration
+  // Coze API Integration - Updated based on Coze docs
   const sendMessageToCoze = async (text: string) => {
     setIsTyping(true);
+    setError(null);
 
     // Add user message immediately
     const userMessage: Message = {
@@ -53,8 +55,10 @@ function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
+      console.log("Calling Coze API with query:", text);
+      
       const response = await fetch(
-        "https://api.coze.com/v3/chat",
+        "https://api.coze.com/open_api/v2/chat",
         {
           method: "POST",
           headers: {
@@ -63,40 +67,57 @@ function ChatPage() {
           },
           body: JSON.stringify({
             bot_id: "7649776912948330549",
-            user_id: "lumen-user",
+            user: "lumen-user-" + Math.random().toString(36).substr(2, 9),
+            query: text,
             stream: false,
-            auto_save_history: true,
-            additional_messages: [
-              {
-                role: "user",
-                content: text,
-                content_type: "text",
-              },
-            ],
           }),
         }
       );
 
-      const data = await response.json();
+      console.log("Coze API response status:", response.status);
       
-      // Get AI response
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Coze API error response:", errorText);
+        throw new Error(`API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Coze API full response:", data);
+      
+      // Get AI response from Coze's v2 API response format
+      let aiContent = "Sorry, I couldn't get a response.";
+      
+      if (data.messages && Array.isArray(data.messages)) {
+        const assistantMessage = data.messages.find((msg: any) => msg.type === "answer" || msg.role === "assistant");
+        if (assistantMessage) {
+          aiContent = assistantMessage.content || assistantMessage.text || aiContent;
+        }
+      } else if (data.data && data.data.answers) {
+        aiContent = data.data.answers[0] || aiContent;
+      } else if (data.answer) {
+        aiContent = data.answer;
+      }
+      
+      // Add AI message
       const aiMessage: Message = {
         id: Date.now().toString() + "-ai",
         role: "assistant",
-        content: data.messages?.[0]?.content || "Sorry, I couldn't get a response.",
+        content: aiContent,
         timestamp: new Date(),
       };
       
       setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      console.error("Coze API error:", error);
+    } catch (err: any) {
+      console.error("Coze API error details:", err);
       const errorMessage: Message = {
         id: Date.now().toString() + "-error",
         role: "assistant",
-        content: "Sorry, there was an error. Please try again.",
+        content: `Sorry, there was an error: ${err.message}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
+      setError(err.message);
     } finally {
       setIsTyping(false);
     }
@@ -117,9 +138,13 @@ function ChatPage() {
       <aside className="hidden lg:flex flex-col bg-card border border-border/60 rounded-2xl p-3 overflow-hidden">
         <Button
           onClick={async () => {
-            const { id } = await createThread();
-            qc.invalidateQueries({ queryKey: ["threads"] });
-            navigate({ to: "/chat/$threadId", params: { threadId: id } });
+            try {
+              const { id } = await createThread();
+              qc.invalidateQueries({ queryKey: ["threads"] });
+              navigate({ to: "/chat/$threadId", params: { threadId: id } });
+            } catch (err: any) {
+              console.error("Create thread error:", err);
+            }
           }}
           className="rounded-full mb-3"
         >
@@ -136,9 +161,13 @@ function ChatPage() {
               </Link>
               <button
                 onClick={async () => {
-                  await deleteThread({ data: { id: t.id } });
-                  qc.invalidateQueries({ queryKey: ["threads"] });
-                  if (t.id === threadId) navigate({ to: "/chat" });
+                  try {
+                    await deleteThread({ data: { id: t.id } });
+                    qc.invalidateQueries({ queryKey: ["threads"] });
+                    if (t.id === threadId) navigate({ to: "/chat" });
+                  } catch (err: any) {
+                    console.error("Delete thread error:", err);
+                  }
                 }}
                 className="opacity-0 group-hover:opacity-100 p-1.5 text-muted-foreground hover:text-destructive"
                 aria-label="Delete"
@@ -157,7 +186,14 @@ function ChatPage() {
             <Sparkles className="w-5 h-5 text-accent" />
             Lumen AI Assistant
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Your AI marketplace assistant</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your AI marketplace assistant
+          </p>
+          {error && (
+            <p className="text-xs text-red-500 mt-1">
+              Error: {error}
+            </p>
+          )}
         </div>
 
         {/* Messages container */}
@@ -183,6 +219,9 @@ function ChatPage() {
                     {s}
                   </button>
                 ))}
+              </div>
+              <div className="mt-6 text-xs text-muted-foreground">
+                <p>Check the browser console for debugging info!</p>
               </div>
             </div>
           ) : (
