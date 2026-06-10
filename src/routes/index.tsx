@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, ShoppingBag, MessageSquare } from "lucide-react";
 import { getHomeData } from "@/lib/products.functions";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -22,39 +22,46 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { data } = useSuspenseQuery(homeQuery);
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-12">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-16">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary to-muted p-8 sm:p-14">
-        <div className="max-w-xl space-y-5">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
-            <Sparkles className="w-3.5 h-3.5" /> AI-powered shopping
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent/10 via-secondary to-muted p-8 sm:p-16">
+        <div className="relative z-10 max-w-xl space-y-6">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-accent/20 text-accent">
+            <Sparkles className="w-4 h-4" /> AI-powered shopping
           </span>
-          <h1 className="font-display text-4xl sm:text-6xl leading-[1.05] text-foreground">
-            A marketplace<br />that feels <em>personal</em>.
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground">
+            A marketplace<br />that feels <em className="text-accent">personal</em>.
           </h1>
-          <p className="text-muted-foreground max-w-md">
+          <p className="text-muted-foreground text-lg max-w-md">
             Discover products from trusted sellers across Indonesia. Let Lumen,
             our AI assistant, help you find exactly what you need.
           </p>
-          <div className="flex gap-3 pt-1">
-            <Link to="/category/$slug" params={{ slug: "electronics" }} className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-90 transition">
+          <div className="flex flex-wrap gap-4 pt-2">
+            <Link to="/category/$slug" params={{ slug: "electronics" }} className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-7 py-3.5 text-sm font-semibold hover:opacity-90 transition shadow-lg shadow-primary/20">
               Start shopping <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link to="/chat" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium hover:border-accent transition">
-              Ask Lumen
+            <Link to="/chat" className="inline-flex items-center gap-2 rounded-full border-2 border-border bg-card px-7 py-3.5 text-sm font-semibold hover:border-accent hover:bg-accent/5 transition-all">
+              <MessageSquare className="w-4 h-4" /> Ask Lumen
             </Link>
           </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-10 right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-1/3 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
       </section>
 
       {/* Categories */}
       <section>
-        <h2 className="font-display text-2xl mb-4">Categories</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="font-display text-3xl">Browse categories</h2>
+          <Link to="/products" className="text-sm font-medium text-accent hover:underline">View all</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {data.categories.map((c) => (
-            <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="rounded-2xl bg-card border border-border/60 p-4 text-center hover:border-accent hover:-translate-y-0.5 transition-all">
-              <div className="text-xl mb-1.5">{categoryEmoji(c.slug)}</div>
-              <div className="text-xs font-medium">{c.name}</div>
+            <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="rounded-2xl bg-card border border-border/50 p-6 text-center hover:border-accent hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group">
+              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{categoryEmoji(c.slug)}</div>
+              <div className="text-sm font-semibold">{c.name}</div>
             </Link>
           ))}
         </div>
@@ -62,20 +69,48 @@ function Home() {
 
       {/* Featured */}
       <section>
-        <div className="flex items-end justify-between mb-4">
-          <h2 className="font-display text-2xl">Featured today</h2>
-          <span className="text-xs text-muted-foreground">Curated by Lumen</span>
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="font-display text-3xl">Featured today</h2>
+          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-accent" /> Curated by Lumen
+          </span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {data.featured.map((p) => <ProductCard key={p.id} p={p} />)}
         </div>
       </section>
 
       {/* Trending */}
       <section>
-        <h2 className="font-display text-2xl mb-4">Trending now</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="font-display text-3xl">Trending now</h2>
+          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <Zap className="w-4 h-4 text-yellow-500" /> Hot this week
+          </span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {data.trending.map((p) => <ProductCard key={p.id} p={p} />)}
+        </div>
+      </section>
+
+      {/* Public Ad Banner */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-8 sm:p-12 text-white">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/10 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
+        
+        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+          <h2 className="font-display text-3xl sm:text-5xl">Ready to elevate your shopping experience?</h2>
+          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            Connect your store, sync products, and let our AI help you reach more customers!
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <Link to="/product-sync" className="inline-flex items-center gap-2 rounded-full bg-white text-indigo-600 px-8 py-4 text-sm font-bold hover:bg-white/90 transition shadow-2xl">
+              <ShoppingBag className="w-5 h-5" /> Sync your products
+            </Link>
+            <Link to="/chat" className="inline-flex items-center gap-2 rounded-full border-2 border-white px-8 py-4 text-sm font-bold hover:bg-white/10 transition">
+              <MessageSquare className="w-5 h-5" /> Ask how it works
+            </Link>
+          </div>
         </div>
       </section>
     </div>
