@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Send, Sparkles, Image, Mic, Paperclip } from "lucide-react";
 import { listThreads, createThread, deleteThread } from "@/lib/threads.functions";
 import { Button } from "@/components/ui/button";
 
@@ -9,56 +9,107 @@ export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
 });
 
+type Message = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+  attachments?: string[];
+};
+
 function ChatPage() {
   const { threadId } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
   const threadsQ = useQuery({ queryKey: ["threads"], queryFn: () => listThreads() });
-  const [isCozeLoaded, setIsCozeLoaded] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    // Load Coze SDK
-    const script = document.createElement("script");
-    script.src = "https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js";
-    script.async = true;
-    script.onload = () => {
-      setIsCozeLoaded(true);
-    };
-    document.body.appendChild(script);
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, isTyping]);
 
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
+  // Auto-focus input
+  useEffect(() => {
+    inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    if (isCozeLoaded && typeof window !== "undefined") {
-      // @ts-ignore
-      if (window.CozeWebSDK) {
-        // @ts-ignore
-        new window.CozeWebSDK.WebChatClient({
-          config: {
+  // Coze API Integration
+  const sendMessageToCoze = async (text: string) => {
+    setIsTyping(true);
+
+    // Add user message immediately
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: text,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      const response = await fetch(
+        "https://api.coze.com/v3/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU",
+          },
+          body: JSON.stringify({
             bot_id: "7649776912948330549",
-          },
-          componentProps: {
-            title: "Lumen AI Assistant",
-          },
-          auth: {
-            type: "token",
-            token: "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU",
-            onRefreshToken: function () {
-              return "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU";
-            },
-          },
-        });
-      }
+            user_id: "lumen-user",
+            stream: false,
+            auto_save_history: true,
+            additional_messages: [
+              {
+                role: "user",
+                content: text,
+                content_type: "text",
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      
+      // Get AI response
+      const aiMessage: Message = {
+        id: Date.now().toString() + "-ai",
+        role: "assistant",
+        content: data.messages?.[0]?.content || "Sorry, I couldn't get a response.",
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Coze API error:", error);
+      const errorMessage: Message = {
+        id: Date.now().toString() + "-error",
+        role: "assistant",
+        content: "Sorry, there was an error. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
     }
-  }, [isCozeLoaded]);
+  };
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || isTyping) return;
+    
+    setInput("");
+    await sendMessageToCoze(text);
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 grid lg:grid-cols-[260px_1fr] gap-6 h-[calc(100vh-4rem-3rem)]">
@@ -99,13 +150,99 @@ function ChatPage() {
         </div>
       </aside>
 
-      {/* Coze AI Chat Widget Container */}
+      {/* Custom Coze AI Chat */}
       <section className="flex flex-col bg-card border border-border/60 rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h2 className="font-display text-xl">Lumen AI Assistant</h2>
-          <p className="text-sm text-muted-foreground mt-1">Ask me about products, recommendations, or anything else!</p>
+          <h2 className="font-display text-xl flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-accent" />
+            Lumen AI Assistant
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">Your AI marketplace assistant</p>
         </div>
-        <div id="coze-chat-container" className="flex-1"></div>
+
+        {/* Messages container */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-5">
+          {messages.length === 0 ? (
+            <div className="text-center py-16 space-y-3">
+              <div className="inline-flex w-12 h-12 rounded-full bg-accent/15 items-center justify-center">
+                <Sparkles className="w-5 h-5 text-accent" />
+              </div>
+              <h3 className="font-display text-2xl">Hi, I'm Lumen AI</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                I'm here to help with your marketplace needs! Ask me about products, recommendations, or anything else.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 pt-2">
+                {["Recommend products for me", "How do I start selling?", "Show me trending items"].map((s) => (
+                  <button 
+                    key={s} 
+                    onClick={() => {
+                      setInput(s);
+                    }} 
+                    className="text-xs px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/70 transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            messages.map((m) => (
+              <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""}`}>
+                {m.role === "assistant" && (
+                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-accent" />
+                  </div>
+                )}
+                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
+                  {m.content}
+                </div>
+              </div>
+            ))
+          )}
+
+          {/* Typing indicator */}
+          {isTyping && (
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-accent" />
+              </div>
+              <div className="bg-secondary rounded-2xl px-4 py-3 flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" />
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0.15s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0.3s]" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Chat input */}
+        <form onSubmit={handleSend} className="border-t border-border p-3 flex gap-2 items-end">
+          <div className="flex gap-1">
+            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+              <Paperclip className="w-4 h-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+              <Image className="w-4 h-4" />
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+              <Mic className="w-4 h-4" />
+            </Button>
+          </div>
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask Lumen AI anything..."
+            className="flex-1 bg-secondary rounded-full px-4 h-11 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+          />
+          <Button 
+            type="submit" 
+            disabled={isTyping || !input.trim()} 
+            className="rounded-full h-11 px-5"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </form>
       </section>
     </div>
   );
