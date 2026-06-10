@@ -3,6 +3,13 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { getCategory } from "@/lib/products.functions";
 import { ProductCard } from "@/components/ProductCard";
 import type { Product } from "@/lib/products.functions";
+import {
+  additionalFashionProducts,
+  additionalHomeProducts,
+  additionalBeautyProducts,
+  additionalSportsProducts,
+  additionalBooksProducts,
+} from "@/data/additional-products";
 
 // Sample products data for all categories - real e-commerce inspired!
 const sampleProducts: Record<string, Product[]> = {
@@ -332,6 +339,7 @@ const sampleProducts: Record<string, Product[]> = {
       platform: "own-store",
       seller_type: "own-store"
     },
+    ...additionalFashionProducts,
   ],
   home: [
     {
@@ -369,6 +377,7 @@ const sampleProducts: Record<string, Product[]> = {
       seller_type: "affiliate",
       affiliate_link: "https://www.tokopedia.com/search?q=air+fryer+5.5l"
     },
+    ...additionalHomeProducts,
   ],
   beauty: [
     {
@@ -389,6 +398,7 @@ const sampleProducts: Record<string, Product[]> = {
       seller_type: "affiliate",
       affiliate_link: "https://shopee.co.id/search?keyword=korean+skincare+bundle"
     },
+    ...additionalBeautyProducts,
   ],
   sports: [
     {
@@ -408,6 +418,7 @@ const sampleProducts: Record<string, Product[]> = {
       platform: "own-store",
       seller_type: "own-store"
     },
+    ...additionalSportsProducts,
   ],
   books: [
     {
@@ -428,6 +439,7 @@ const sampleProducts: Record<string, Product[]> = {
       seller_type: "affiliate",
       affiliate_link: "https://www.tokopedia.com/search?q=bestselling+novels"
     },
+    ...additionalBooksProducts,
   ]
 };
 
