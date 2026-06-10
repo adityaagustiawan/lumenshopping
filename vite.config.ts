@@ -15,18 +15,6 @@ export default defineConfig({
   vite: {
     build: {
       chunkSizeWarningLimit: 2000,
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes("recharts")) {
-              return "recharts";
-            }
-            if (id.includes("@radix-ui")) {
-              return "radix";
-            }
-          },
-        },
-      },
     },
   },
 });
