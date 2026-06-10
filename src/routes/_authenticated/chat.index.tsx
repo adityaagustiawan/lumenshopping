@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { listThreads, createThread } from "@/lib/threads.functions";
+import { LoadingPage } from "@/components/LoadingSpinner";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   component: ChatIndex,
@@ -19,5 +20,5 @@ function ChatIndex() {
       }
     })();
   }, [navigate]);
-  return <div className="p-8 text-sm text-muted-foreground">Loading chat…</div>;
+  return <LoadingPage message="Loading chat..." />;
 }

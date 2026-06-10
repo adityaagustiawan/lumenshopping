@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-export type Platform = 'shopee' | 'tokopedia' | 'lazada' | 'bukalapak' | 'blibli' | 'amazon' | 'ebay' | 'woocommerce' | 'own-store';
+export type Platform = 'shopee' | 'tokopedia' | 'lazada' | 'bukalapak' | 'blibli' | 'amazon' | 'ebay' | 'aliexpress' | 'woocommerce' | 'own-store';
 
 export type Product = {
   id: string;

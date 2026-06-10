@@ -56,6 +56,13 @@ export const PLATFORM_INFO: Record<Platform, {
     gradient: 'from-red-600 via-blue-600 to-yellow-500',
     badgeColor: 'bg-red-600',
   },
+  'aliexpress': {
+    name: 'AliExpress',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/AliExpress_logo.svg',
+    primaryColor: '#FF4747',
+    gradient: 'from-red-500 to-orange-500',
+    badgeColor: 'bg-red-500',
+  },
   'woocommerce': {
     name: 'WooCommerce',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/9/98/WooCommerce_logo.svg',
