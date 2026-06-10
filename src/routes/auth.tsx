@@ -16,15 +16,19 @@ export const Route = createFileRoute("/auth")({
  * It handles localhost, Vercel preview URLs, and production.
  */
 const getURL = () => {
+  if (typeof window !== "undefined") {
+    return window.location.origin + "/";
+  }
+  
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env var
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    window.location.origin;
+    "http://localhost:8080";
   
   // Make sure to include `https://` when not localhost.
-  url = url.includes('http') ? url : `https://${url}`;
+  url = url.includes("http") ? url : `https://${url}`;
   // Make sure to include a trailing `/`.
-  url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+  url = url.charAt(url.length - 1) === "/" ? url : `${url}/`;
   return url;
 };
 
