@@ -10,6 +10,17 @@ import {
   additionalSportsProducts,
   additionalBooksProducts,
 } from "@/data/additional-products";
+import { useState, useMemo } from "react";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Sample products data for all categories - real e-commerce inspired!
 const sampleProducts: Record<string, Product[]> = {
@@ -469,21 +480,194 @@ function CategoryPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(categoryQuery(slug));
   
+  // State for search and filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("featured");
+  const [platformFilter, setPlatformFilter] = useState("all");
+  const [priceRange, setPriceRange] = useState("all");
+  
   // If no products from DB, use our sample data!
-  const productsToShow = data.products.length > 0 
-    ? data.products 
+  const allProducts = data.products.length > 0
+    ? data.products
     : (sampleProducts[slug as keyof typeof sampleProducts] || []);
+  
+  // Get unique platforms from products
+  const platforms = useMemo(() => {
+    const uniquePlatforms = new Set(allProducts.map(p => p.platform).filter(Boolean));
+    return Array.from(uniquePlatforms);
+  }, [allProducts]);
+  
+  // Filter and sort products
+  const productsToShow = useMemo(() => {
+    let filtered = [...allProducts];
+    
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      );
+    }
+    
+    // Platform filter
+    if (platformFilter !== "all") {
+      filtered = filtered.filter(p => p.platform === platformFilter);
+    }
+    
+    // Price range filter
+    if (priceRange !== "all") {
+      filtered = filtered.filter(p => {
+        const price = p.price_cents / 100;
+        switch (priceRange) {
+          case "under-100": return price < 100;
+          case "100-500": return price >= 100 && price < 500;
+          case "500-1000": return price >= 500 && price < 1000;
+          case "over-1000": return price >= 1000;
+          default: return true;
+        }
+      });
+    }
+    
+    // Sort products
+    switch (sortBy) {
+      case "price-low":
+        filtered.sort((a, b) => a.price_cents - b.price_cents);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.price_cents - a.price_cents);
+        break;
+      case "rating":
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case "popular":
+        filtered.sort((a, b) => b.sold_count - a.sold_count);
+        break;
+      case "featured":
+      default:
+        filtered.sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+        break;
+    }
+    
+    return filtered;
+  }, [allProducts, searchQuery, platformFilter, priceRange, sortBy]);
   
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
+      {/* Header */}
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-wider">Category</p>
         <h1 className="font-display text-4xl mt-1">{data.category?.name}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{productsToShow.length} products</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {productsToShow.length} of {allProducts.length} products
+        </p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {productsToShow.map((p) => <ProductCard key={p.id} p={p} />)}
+      
+      {/* Search and Filters */}
+      <div className="space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        {/* Filters Row */}
+        <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Filters:</span>
+          </div>
+          
+          {/* Sort By */}
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">Featured</SelectItem>
+              <SelectItem value="popular">Most Popular</SelectItem>
+              <SelectItem value="rating">Highest Rated</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {/* Platform Filter */}
+          {platforms.length > 0 && (
+            <Select value={platformFilter} onValueChange={setPlatformFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Platforms" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Platforms</SelectItem>
+                {platforms.map(platform => (
+                  <SelectItem key={platform} value={platform!}>
+                    {platform?.charAt(0).toUpperCase() + platform?.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {/* Price Range Filter */}
+          <Select value={priceRange} onValueChange={setPriceRange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Price Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
+              <SelectItem value="under-100">Under $100</SelectItem>
+              <SelectItem value="100-500">$100 - $500</SelectItem>
+              <SelectItem value="500-1000">$500 - $1,000</SelectItem>
+              <SelectItem value="over-1000">Over $1,000</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {/* Clear Filters */}
+          {(searchQuery || platformFilter !== "all" || priceRange !== "all" || sortBy !== "featured") && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSearchQuery("");
+                setPlatformFilter("all");
+                setPriceRange("all");
+                setSortBy("featured");
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
       </div>
+      
+      {/* Products Grid */}
+      {productsToShow.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {productsToShow.map((p) => <ProductCard key={p.id} p={p} />)}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No products found matching your criteria.</p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => {
+              setSearchQuery("");
+              setPlatformFilter("all");
+              setPriceRange("all");
+            }}
+          >
+            Clear Filters
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
