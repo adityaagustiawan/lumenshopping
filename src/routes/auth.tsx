@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +16,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const submit = async (e: React.FormEvent) => {
@@ -40,9 +40,23 @@ function AuthPage() {
     } finally { setLoading(false); }
   };
 
-  const google = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error(r.error.message);
+  const signInWithProvider = async (provider: 'google' | 'facebook') => {
+    setSocialLoading(provider);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) {
+        throw error;
+      }
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setSocialLoading(null);
+    }
   };
 
   return (
@@ -53,10 +67,28 @@ function AuthPage() {
           <h1 className="font-display text-3xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
           <p className="text-sm text-muted-foreground">Shop and chat with your AI assistant.</p>
         </div>
-        <Button onClick={google} variant="outline" className="w-full rounded-full h-11">
+        <div className="space-y-3">
+          <Button
+          onClick={() => signInWithProvider('google')}
+          variant="outline"
+          disabled={socialLoading !== null}
+          className="w-full rounded-full h-11"
+        >
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11v3.2h5.3c-.2 1.4-1.6 4-5.3 4-3.2 0-5.8-2.7-5.8-5.9s2.6-5.9 5.8-5.9c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.7 3.9 14.6 3 12 3 6.9 3 2.8 7.1 2.8 12.2S6.9 21.4 12 21.4c6.9 0 11.5-4.9 11.5-11.7 0-.8-.1-1.4-.2-2H12z"/></svg>
-          Continue with Google
+          {socialLoading === 'google' ? 'Connecting...' : 'Continue with Google'}
         </Button>
+        <Button
+          onClick={() => signInWithProvider('facebook')}
+          variant="outline"
+          disabled={socialLoading !== null}
+          className="w-full rounded-full h-11 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
+        >
+          <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.991 4.388 10.954 10.125 11.854v-8.384H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.494 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.384C19.612 23.027 24 18.064 24 12.073z"/>
+          </svg>
+          {socialLoading === 'facebook' ? 'Connecting...' : 'Continue with Facebook'}
+        </Button>
+        </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <div className="flex-1 h-px bg-border" /> or <div className="flex-1 h-px bg-border" />
         </div>
