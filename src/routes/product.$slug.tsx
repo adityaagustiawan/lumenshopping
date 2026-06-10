@@ -1,6 +1,7 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-query";
-import { Star, MapPin, Shield, Truck } from "lucide-react";
+import { Star, MapPin, Shield, Truck, ExternalLink, ShoppingBag } from "lucide-react";
+import { getPlatformInfo } from "@/lib/platforms";
 import { toast } from "sonner";
 import { getProduct } from "@/lib/products.functions";
 import { addToCart } from "@/lib/cart.functions";
@@ -38,6 +39,14 @@ function ProductPage() {
   const navigate = useNavigate();
   const p = data.product!;
   const discount = p.compare_at_cents ? Math.round((1 - p.price_cents / p.compare_at_cents) * 100) : 0;
+  const platformInfo = getPlatformInfo(p.platform);
+  const isAffiliate = p.seller_type === 'affiliate' && p.affiliate_link;
+
+  const handleAffiliateClick = () => {
+    if (p.affiliate_link) {
+      window.open(p.affiliate_link, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const add = useMutation({
     mutationFn: () => addToCart({ data: { product_id: p.id, quantity: 1 } }),
@@ -48,8 +57,18 @@ function ProductPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-12">
       <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-        <div className="rounded-3xl overflow-hidden bg-muted aspect-square">
+        <div className="rounded-3xl overflow-hidden bg-muted aspect-square relative">
           <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+          {platformInfo && (
+            <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur px-3 py-2 rounded-full shadow-sm">
+              <img 
+                src={platformInfo.logo} 
+                alt={platformInfo.name} 
+                className="h-5 w-auto object-contain" 
+              />
+              <span className="text-xs font-semibold text-gray-700">{platformInfo.name}</span>
+            </div>
+          )}
         </div>
         <div className="space-y-6">
           <div>
@@ -74,17 +93,26 @@ function ProductPage() {
           </div>
           <p className="text-foreground/80 leading-relaxed">{p.description}</p>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground"><Truck className="w-4 h-4" /> Free shipping over Rp 250.000</div>
+            <div className="flex items-center gap-2 text-muted-foreground"><Truck className="w-4 h-4" /> {isAffiliate ? "Direct from seller" : "Free shipping over Rp 250.000"}</div>
             <div className="flex items-center gap-2 text-muted-foreground"><Shield className="w-4 h-4" /> Buyer protection</div>
           </div>
           <div className="flex gap-3 pt-2">
-            <Button
-              size="lg" className="flex-1 rounded-full"
-              disabled={add.isPending}
-              onClick={() => user ? add.mutate() : navigate({ to: "/auth" })}
-            >
-              {add.isPending ? "Adding..." : "Add to cart"}
-            </Button>
+            {isAffiliate ? (
+              <Button
+                size="lg" className="flex-1 rounded-full bg-gradient-to-r from-accent to-blue-600 hover:from-accent/90 hover:to-blue-500"
+                onClick={handleAffiliateClick}
+              >
+                <ExternalLink className="w-5 h-5 mr-2" /> Buy on {platformInfo?.name}
+              </Button>
+            ) : (
+              <Button
+                size="lg" className="flex-1 rounded-full"
+                disabled={add.isPending}
+                onClick={() => user ? add.mutate() : navigate({ to: "/auth" })}
+              >
+                <ShoppingBag className="w-5 h-5 mr-2" /> {add.isPending ? "Adding..." : "Add to cart"}
+              </Button>
+            )}
             <Button
               size="lg" variant="outline" className="flex-1 rounded-full border-accent text-accent hover:bg-accent hover:text-accent-foreground"
               onClick={() => navigate({ to: "/chat" })}

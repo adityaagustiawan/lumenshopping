@@ -1,14 +1,30 @@
 import { Link } from "@tanstack/react-router";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, ExternalLink, ShoppingCart } from "lucide-react";
 import type { Product } from "@/lib/products.functions";
 import { formatIDR, formatCompact } from "@/lib/format";
+import { getPlatformInfo } from "@/lib/platforms";
 
 export function ProductCard({ p }: { p: Product }) {
   const discount = p.compare_at_cents ? Math.round((1 - p.price_cents / p.compare_at_cents) * 100) : 0;
+  const platformInfo = getPlatformInfo(p.platform);
+  const isAffiliate = p.seller_type === 'affiliate' && p.affiliate_link;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isAffiliate) {
+      e.preventDefault();
+      window.open(p.affiliate_link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const CardWrapper = isAffiliate ? 'a' : Link;
+  const wrapperProps = isAffiliate 
+    ? { href: p.affiliate_link, target: '_blank', rel: 'noopener noreferrer' }
+    : { to: '/product/$slug', params: { slug: p.slug } };
+
   return (
-    <Link
-      to="/product/$slug"
-      params={{ slug: p.slug }}
+    <CardWrapper
+      {...wrapperProps}
+      onClick={handleClick}
       className="group block rounded-2xl bg-card overflow-hidden border border-border/60 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)] transition-all"
     >
       <div className="aspect-square overflow-hidden bg-muted relative">
@@ -22,6 +38,21 @@ export function ProductCard({ p }: { p: Product }) {
           <span className="absolute top-2 left-2 bg-discount text-accent-foreground text-[10px] font-medium px-2 py-1 rounded-full">
             −{discount}%
           </span>
+        )}
+        
+        {/* Platform badge */}
+        {platformInfo && (
+          <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-white/95 backdrop-blur px-2 py-1 rounded-full shadow-sm">
+            <img 
+              src={platformInfo.logo} 
+              alt={platformInfo.name} 
+              className="h-4 w-auto object-contain"
+            />
+            <span className="text-[10px] font-semibold text-gray-700">
+              {platformInfo.name}
+            </span>
+            {isAffiliate && <ExternalLink className="w-3 h-3 text-gray-500" />}
+          </div>
         )}
       </div>
       <div className="p-3 space-y-1.5">
@@ -42,7 +73,20 @@ export function ProductCard({ p }: { p: Product }) {
             <MapPin className="w-3 h-3" /> {p.location}
           </span>
         </div>
+        
+        {/* Call to action button */}
+        <div className="pt-2">
+          {isAffiliate ? (
+            <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-accent to-blue-600 hover:from-accent/90 hover:to-blue-500 text-white text-xs font-semibold py-2 rounded-xl transition-all">
+              <ExternalLink className="w-3.5 h-3.5" /> Buy on {platformInfo?.name}
+            </button>
+          ) : (
+            <button className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold py-2 rounded-xl transition-all">
+              <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+            </button>
+          )}
+        </div>
       </div>
-    </Link>
+    </CardWrapper>
   );
 }

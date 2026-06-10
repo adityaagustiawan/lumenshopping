@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+export type Platform = 'shopee' | 'tokopedia' | 'lazada' | 'bukalapak' | 'blibli' | 'amazon' | 'ebay' | 'woocommerce' | 'own-store';
+
 export type Product = {
   id: string;
   slug: string;
@@ -15,6 +17,11 @@ export type Product = {
   stock: number;
   location: string;
   is_featured: boolean;
+  platform?: Platform;
+  affiliate_link?: string;
+  seller_type?: 'affiliate' | 'own-store';
+  external_id?: string;
+  additional_images?: string[];
 };
 
 export type Category = {
