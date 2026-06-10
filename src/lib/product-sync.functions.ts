@@ -144,8 +144,9 @@ export const syncProductsFromSource = createServerFn({ method: "POST" })
           productsUpdated++;
         } else {
           // Create new product
+          const { additional_images, ...productData } = normalizedProduct;
           await supabaseAdmin.from("products").insert({
-            ...normalizedProduct,
+            ...productData,
             product_source_id: data.product_source_id,
             metadata: normalizedProduct.metadata as any,
           });
