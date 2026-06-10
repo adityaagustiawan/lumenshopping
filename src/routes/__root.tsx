@@ -89,36 +89,41 @@ function RootComponent() {
       }
     });
 
-    // Load Coze SDK
-    const script = document.createElement("script");
-    script.src = "https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js";
-    script.async = true;
-    script.onload = () => {
-      // @ts-ignore
-      if (window.CozeWebSDK) {
+    let script: HTMLScriptElement | null = null;
+
+    // Only load Coze SDK in the browser
+    if (typeof window !== "undefined" && typeof document !== "undefined") {
+      // Load Coze SDK
+      script = document.createElement("script");
+      script.src = "https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js";
+      script.async = true;
+      script.onload = () => {
         // @ts-ignore
-        new window.CozeWebSDK.WebChatClient({
-          config: {
-            bot_id: "7649776912948330549",
-          },
-          componentProps: {
-            title: "Coze",
-          },
-          auth: {
-            type: "token",
-            token: "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU",
-            onRefreshToken: function () {
-              return "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU";
+        if (window.CozeWebSDK) {
+          // @ts-ignore
+          new window.CozeWebSDK.WebChatClient({
+            config: {
+              bot_id: "7649776912948330549",
             },
-          },
-        });
-      }
-    };
-    document.body.appendChild(script);
+            componentProps: {
+              title: "Coze",
+            },
+            auth: {
+              type: "token",
+              token: "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU",
+              onRefreshToken: function () {
+                return "pat_3CaXfkjyolIFkWAKOPbiyC9xqdKKc9kcws1XrVWpQxQus4aWiRoxqczGGkq8JupU";
+              },
+            },
+          });
+        }
+      };
+      document.body.appendChild(script);
+    }
 
     return () => {
       sub.subscription.unsubscribe();
-      if (document.body.contains(script)) {
+      if (script && typeof document !== "undefined" && document.body.contains(script)) {
         document.body.removeChild(script);
       }
     };
