@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, RefreshCw, Database, Zap, CheckCircle, XCircle } from "lucide-react";
+import { Plus, RefreshCw, Database, Zap, CheckCircle, XCircle, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getProductSources, syncProductsFromSource, createConnectorConfig, createProductSource } from "@/lib/product-sync.functions";
+import { seedSampleProducts } from "@/lib/seed-products.functions";
 import { ConnectorFactory } from "@/lib/connectors/connector-factory";
 
 export const Route = createFileRoute("/_authenticated/product-sync")({
@@ -15,6 +16,7 @@ function ProductSyncPage() {
   const [isCreatingConnector, setIsCreatingConnector] = useState(false);
   const [platform, setPlatform] = useState("woocommerce");
   const [syncingSource, setSyncingSource] = useState<string | null>(null);
+  const [isSeeding, setIsSeeding] = useState(false);
   const availablePlatforms = ConnectorFactory.getAvailablePlatforms();
   
   const sourcesQuery = useSuspenseQuery({
@@ -32,6 +34,20 @@ function ProductSyncPage() {
       alert(`Sync failed: ${(error as Error).message}`);
     } finally {
       setSyncingSource(null);
+    }
+  };
+
+  const handleSeedProducts = async () => {
+    setIsSeeding(true);
+    try {
+      const result = await seedSampleProducts();
+      alert(`${result.message} Added ${result.count} products!`);
+      await queryClient.invalidateQueries({ queryKey: ["home"] }); // Refresh homepage
+      await queryClient.invalidateQueries({ queryKey: ["admin-products"] }); // Refresh dashboard
+    } catch (error) {
+      alert(`Seeding failed: ${(error as Error).message}`);
+    } finally {
+      setIsSeeding(false);
     }
   };
   
@@ -58,9 +74,13 @@ function ProductSyncPage() {
       )}
       
       {!isCreatingConnector && (
-        <div className="mb-8">
+        <div className="mb-8 flex gap-3">
           <Button onClick={() => setIsCreatingConnector(true)}>
             <Plus className="w-4 h-4 mr-2" /> Connect New Store
+          </Button>
+          <Button variant="secondary" onClick={handleSeedProducts} disabled={isSeeding}>
+            <Sparkles className={`w-4 h-4 mr-2 ${isSeeding ? "animate-spin" : ""}`} />
+            {isSeeding ? "Seeding..." : "Seed Sample Products"}
           </Button>
         </div>
       )}
