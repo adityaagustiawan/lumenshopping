@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+// Auth route for login and signup
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Lumen" }, { name: "description", content: "Sign in to Lumen marketplace." }] }),
   component: AuthPage,
