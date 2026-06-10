@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedProductSyncRouteImport } from './routes/_authenticated/product-sync'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
@@ -55,6 +56,12 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProductSyncRoute =
+  AuthenticatedProductSyncRouteImport.update({
+    id: '/product-sync',
+    path: '/product-sync',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -83,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -95,6 +103,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -109,6 +118,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/account'
     | '/dashboard'
+    | '/product-sync'
     | '/api/chat'
     | '/category/$slug'
     | '/product/$slug'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/account'
     | '/dashboard'
+    | '/product-sync'
     | '/api/chat'
     | '/category/$slug'
     | '/product/$slug'
@@ -148,6 +160,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/_authenticated/account'
     | '/_authenticated/dashboard'
+    | '/_authenticated/product-sync'
     | '/api/chat'
     | '/category/$slug'
     | '/product/$slug'
@@ -216,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/product-sync': {
+      id: '/_authenticated/product-sync'
+      path: '/product-sync'
+      fullPath: '/product-sync'
+      preLoaderRoute: typeof AuthenticatedProductSyncRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -250,6 +270,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProductSyncRoute: typeof AuthenticatedProductSyncRoute
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
 }
@@ -257,6 +278,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProductSyncRoute: AuthenticatedProductSyncRoute,
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
 }

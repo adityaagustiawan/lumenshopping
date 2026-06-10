@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line, LineChart, CartesianGrid } from "recharts";
-import { Package, DollarSign, Users, ShoppingCart, TrendingUp } from "lucide-react";
+import { Package, DollarSign, Users, ShoppingCart, TrendingUp, Database } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Lumen" }] }),
@@ -41,6 +42,24 @@ function DashboardPage() {
         <h1 className="font-display text-4xl">Dashboard</h1>
         <p className="text-muted-foreground text-sm">Welcome back! Here's what's happening with your store today.</p>
       </div>
+
+      {/* Product Sync Shortcut */}
+      <Card className="border-border/60 shadow-sm bg-gradient-to-r from-accent/10 to-accent/5">
+        <CardContent className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-accent/20 rounded-full">
+              <Database className="w-6 h-6 text-accent" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">Product Sync</h3>
+              <p className="text-sm text-muted-foreground">Connect stores and sync products automatically</p>
+            </div>
+          </div>
+          <Link to="/product-sync">
+            <Button>Manage Sync</Button>
+          </Link>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
