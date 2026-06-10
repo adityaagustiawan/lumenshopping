@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, MessageSquare, ShoppingBag } from "lucide-react";
+import { LogOut, MessageSquare, ShoppingBag, LayoutDashboard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
   head: () => ({ meta: [{ title: "Account — Lumen" }] }),
@@ -31,6 +31,10 @@ function AccountPage() {
         </div>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
+        <Link to="/dashboard" className="rounded-2xl bg-card border border-border/60 p-5 hover:border-accent transition flex items-center gap-3">
+          <LayoutDashboard className="w-5 h-5 text-accent" />
+          <div><p className="font-medium">Dashboard</p><p className="text-xs text-muted-foreground">Store analytics & stats</p></div>
+        </Link>
         <Link to="/chat" className="rounded-2xl bg-card border border-border/60 p-5 hover:border-accent transition flex items-center gap-3">
           <MessageSquare className="w-5 h-5 text-accent" />
           <div><p className="font-medium">AI Assistant</p><p className="text-xs text-muted-foreground">Chat with Lumen</p></div>

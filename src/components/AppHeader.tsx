@@ -43,6 +43,7 @@ export function AppHeader() {
                 <Button variant="ghost" size="icon"><UserIcon className="w-5 h-5" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate({ to: "/dashboard" })}>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/account" })}>Account</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/chat" })}>AI Assistant</DropdownMenuItem>
                 <DropdownMenuSeparator />
