@@ -18,8 +18,13 @@ function createSupabaseClient() {
       ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Please check your .env file.`;
     console.error(`[Supabase] ${message}`);
+    // In production, we might want to fail silently or show a friendly error
+    // but in development, we want to know exactly what's missing.
+    if (typeof window !== 'undefined') {
+       console.log('Available env keys:', Object.keys(import.meta.env));
+    }
     throw new Error(message);
   }
 
@@ -28,6 +33,7 @@ function createSupabaseClient() {
       storage: typeof window !== 'undefined' ? localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
+      detectSessionInUrl: true,
     }
   });
 }
@@ -42,4 +48,3 @@ export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>,
     return Reflect.get(_supabase, prop, receiver);
   },
 });
-
