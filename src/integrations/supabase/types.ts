@@ -105,6 +105,133 @@ export type Database = {
           },
         ]
       }
+      connector_configs: {
+        Row: {
+          id: string
+          user_id: string
+          platform: string
+          config: Json
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          platform: string
+          config: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          platform?: string
+          config?: Json
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      },
+      product_sources: {
+        Row: {
+          id: string
+          name: string
+          platform: string
+          connector_config_id: string | null
+          user_id: string
+          is_active: boolean
+          sync_enabled: boolean
+          last_sync_at: string | null
+          last_sync_status: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          platform: string
+          connector_config_id?: string | null
+          user_id: string
+          is_active?: boolean
+          sync_enabled?: boolean
+          last_sync_at?: string | null
+          last_sync_status?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          platform?: string
+          connector_config_id?: string | null
+          user_id?: string
+          is_active?: boolean
+          sync_enabled?: boolean
+          last_sync_at?: string | null
+          last_sync_status?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_sources_connector_config_id_fkey"
+            columns: ["connector_config_id"]
+            isOneToOne: false
+            referencedRelation: "connector_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      },
+      product_sync_logs: {
+        Row: {
+          id: string
+          product_source_id: string
+          status: string
+          message: string | null
+          products_added: number
+          products_updated: number
+          products_removed: number
+          error_details: Json
+          started_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          product_source_id: string
+          status: string
+          message?: string | null
+          products_added?: number
+          products_updated?: number
+          products_removed?: number
+          error_details?: Json
+          started_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          product_source_id?: string
+          status?: string
+          message?: string | null
+          products_added?: number
+          products_updated?: number
+          products_removed?: number
+          error_details?: Json
+          started_at?: string
+          completed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_sync_logs_product_source_id_fkey"
+            columns: ["product_source_id"]
+            isOneToOne: false
+            referencedRelation: "product_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      },
       products: {
         Row: {
           category_slug: string
@@ -121,6 +248,9 @@ export type Database = {
           slug: string
           sold_count: number
           stock: number
+          product_source_id: string | null
+          external_id: string | null
+          metadata: Json
         }
         Insert: {
           category_slug: string
@@ -137,6 +267,9 @@ export type Database = {
           slug: string
           sold_count?: number
           stock?: number
+          product_source_id?: string | null
+          external_id?: string | null
+          metadata?: Json
         }
         Update: {
           category_slug?: string
@@ -153,6 +286,9 @@ export type Database = {
           slug?: string
           sold_count?: number
           stock?: number
+          product_source_id?: string | null
+          external_id?: string | null
+          metadata?: Json
         }
         Relationships: [
           {

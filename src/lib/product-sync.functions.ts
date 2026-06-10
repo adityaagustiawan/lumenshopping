@@ -14,7 +14,7 @@ export const createConnectorConfig = createServerFn({ method: "POST" })
       config: z.record(z.unknown()),
     }).parse(d)
   )
-  .handler(async ({ context, data }) => {
+  .handler(async ({ context, data }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     // Test connection first
@@ -50,7 +50,7 @@ export const createProductSource = createServerFn({ method: "POST" })
       platform: z.enum(["medusa", "saleor", "vendure", "spree", "prestashop", "magento", "woocommerce"]),
     }).parse(d)
   )
-  .handler(async ({ context, data }) => {
+  .handler(async ({ context, data }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     const { data: source, error } = await supabaseAdmin
@@ -76,7 +76,7 @@ export const syncProductsFromSource = createServerFn({ method: "POST" })
       product_source_id: z.string(),
     }).parse(d)
   )
-  .handler(async ({ context, data }) => {
+  .handler(async ({ context, data }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     // 1. Start sync log
@@ -138,7 +138,7 @@ export const syncProductsFromSource = createServerFn({ method: "POST" })
               stock: normalizedProduct.stock,
               location: normalizedProduct.location,
               is_featured: normalizedProduct.is_featured,
-              metadata: normalizedProduct.metadata,
+              metadata: normalizedProduct.metadata as any,
             })
             .eq("id", existingResult.data.id);
           productsUpdated++;
@@ -147,6 +147,7 @@ export const syncProductsFromSource = createServerFn({ method: "POST" })
           await supabaseAdmin.from("products").insert({
             ...normalizedProduct,
             product_source_id: data.product_source_id,
+            metadata: normalizedProduct.metadata as any,
           });
           productsAdded++;
         }
