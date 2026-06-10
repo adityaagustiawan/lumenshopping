@@ -25,7 +25,7 @@ export const createThread = createServerFn({ method: "POST" })
 
 export const deleteThread = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase.from("threads").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -34,7 +34,7 @@ export const deleteThread = createServerFn({ method: "POST" })
 
 export const getThread = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
     const [{ data: thread, error: te }, { data: msgs, error: me }] = await Promise.all([
       context.supabase.from("threads").select("*").eq("id", data.id).maybeSingle(),

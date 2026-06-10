@@ -39,7 +39,7 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
 });
 
 export const getCategory = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ slug: z.string() }).parse(d))
+  .validator((d: unknown) => z.object({ slug: z.string() }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [cat, prods] = await Promise.all([
@@ -50,7 +50,7 @@ export const getCategory = createServerFn({ method: "GET" })
   });
 
 export const getProduct = createServerFn({ method: "GET" })
-  .inputValidator((d: unknown) => z.object({ slug: z.string() }).parse(d))
+  .validator((d: unknown) => z.object({ slug: z.string() }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: prod } = await supabaseAdmin.from("products").select("*").eq("slug", data.slug).maybeSingle();
