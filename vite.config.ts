@@ -12,4 +12,23 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ["react", "react-dom", "lucide-react"],
+            recharts: ["recharts"],
+            radix: [
+              "@radix-ui/react-dropdown-menu",
+              "@radix-ui/react-dialog",
+              "@radix-ui/react-popover",
+              "@radix-ui/react-slot",
+            ],
+          },
+        },
+      },
+    },
+  },
 });
