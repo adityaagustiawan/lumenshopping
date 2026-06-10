@@ -13,19 +13,24 @@ function createSupabaseClient() {
     (typeof process !== 'undefined' ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined) ||
     (typeof process !== 'undefined' ? process.env.VITE_SUPABASE_PUBLISHABLE_KEY : undefined);
 
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.log('[Supabase Client] Initializing with URL:', SUPABASE_URL ? 'PRESENT' : 'MISSING');
+
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || SUPABASE_URL === 'undefined' || SUPABASE_PUBLISHABLE_KEY === 'undefined') {
     const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
+      ...(!SUPABASE_URL || SUPABASE_URL === 'undefined' ? ['SUPABASE_URL'] : []),
+      ...(!SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY === 'undefined' ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Please check your .env file.`;
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Please check your .env file and ensure VITE_ prefix is used.`;
     console.error(`[Supabase] ${message}`);
-    // In production, we might want to fail silently or show a friendly error
-    // but in development, we want to know exactly what's missing.
+    
     if (typeof window !== 'undefined') {
-       console.log('Available env keys:', Object.keys(import.meta.env));
+       console.log('[Supabase Debug] import.meta.env keys:', Object.keys(import.meta.env));
+       console.log('[Supabase Debug] VITE_SUPABASE_URL value:', import.meta.env.VITE_SUPABASE_URL);
     }
-    throw new Error(message);
+    
+    // Fallback to a dummy URL to prevent the "Invalid supabaseUrl" crash from @supabase/supabase-js
+    // This allows the UI to at least render so the user can see the error toast/message.
+    return createClient<Database>('https://placeholder.supabase.co', 'placeholder-key');
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

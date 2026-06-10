@@ -1,4 +1,7 @@
 {
   "buildCommand": "npm run build",
-  "framework": null
+  "devCommand": "npm run dev",
+  "outputDirectory": ".vercel/output",
+  "framework": "vite",
+  "installCommand": "npm install"
 }

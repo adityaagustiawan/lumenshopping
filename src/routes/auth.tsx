@@ -17,19 +17,23 @@ export const Route = createFileRoute("/auth")({
  */
 const getURL = () => {
   if (typeof window !== "undefined") {
-    return window.location.origin + "/";
+    return window.location.origin + "/account";
   }
   
+  // Use import.meta.env for Vite projects (client-side)
+  // Fall back to process.env for Nitro (server-side)
   let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env var
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+    import.meta.env?.VITE_SITE_URL ??
+    import.meta.env?.VITE_VERCEL_URL ??
+    process?.env?.NEXT_PUBLIC_SITE_URL ??
+    process?.env?.NEXT_PUBLIC_VERCEL_URL ??
     "http://localhost:8080";
   
   // Make sure to include `https://` when not localhost.
   url = url.includes("http") ? url : `https://${url}`;
   // Make sure to include a trailing `/`.
   url = url.charAt(url.length - 1) === "/" ? url : `${url}/`;
-  return url;
+  return url + "account";
 };
 
 function AuthPage() {
@@ -37,7 +41,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [socialLoading, setSocialLoading] = useState<'google' | null>(null);
   const navigate = useNavigate();
 
   const submit = async (e: React.FormEvent) => {
@@ -55,13 +59,13 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
         if (error) throw error;
       }
-      navigate({ to: "/" });
+      navigate({ to: "/account" });
     } catch (err) {
       toast.error((err as Error).message);
     } finally { setLoading(false); }
   };
 
-  const signInWithProvider = async (provider: 'google' | 'facebook') => {
+  const signInWithProvider = async (provider: 'google') => {
     setSocialLoading(provider);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -97,17 +101,6 @@ function AuthPage() {
         >
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11v3.2h5.3c-.2 1.4-1.6 4-5.3 4-3.2 0-5.8-2.7-5.8-5.9s2.6-5.9 5.8-5.9c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.7 3.9 14.6 3 12 3 6.9 3 2.8 7.1 2.8 12.2S6.9 21.4 12 21.4c6.9 0 11.5-4.9 11.5-11.7 0-.8-.1-1.4-.2-2H12z"/></svg>
           {socialLoading === 'google' ? 'Connecting...' : 'Continue with Google'}
-        </Button>
-        <Button
-          onClick={() => signInWithProvider('facebook')}
-          variant="outline"
-          disabled={socialLoading !== null}
-          className="w-full rounded-full h-11 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
-        >
-          <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.991 4.388 10.954 10.125 11.854v-8.384H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.494 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.384C19.612 23.027 24 18.064 24 12.073z"/>
-          </svg>
-          {socialLoading === 'facebook' ? 'Connecting...' : 'Continue with Facebook'}
         </Button>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
