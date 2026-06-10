@@ -17,14 +17,13 @@ export default defineConfig({
       chunkSizeWarningLimit: 2000,
       rollupOptions: {
         output: {
-          manualChunks: {
-            recharts: ["recharts"],
-            radix: [
-              "@radix-ui/react-dropdown-menu",
-              "@radix-ui/react-dialog",
-              "@radix-ui/react-popover",
-              "@radix-ui/react-slot",
-            ],
+          manualChunks: (id) => {
+            if (id.includes("recharts")) {
+              return "recharts";
+            }
+            if (id.includes("@radix-ui")) {
+              return "radix";
+            }
           },
         },
       },
