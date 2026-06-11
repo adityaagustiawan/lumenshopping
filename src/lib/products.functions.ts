@@ -22,6 +22,7 @@ export type Product = {
   seller_type?: 'affiliate' | 'own-store';
   external_id?: string;
   additional_images?: string[];
+  video_url?: string;
 };
 
 export type Category = {

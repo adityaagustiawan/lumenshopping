@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShortsRouteImport } from './routes/shorts'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -22,6 +23,11 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
 
+const ShortsRoute = ShortsRouteImport.update({
+  id: '/shorts',
+  path: '/shorts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/shorts': typeof ShortsRoute
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/product-sync': typeof AuthenticatedProductSyncRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/shorts': typeof ShortsRoute
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/product-sync': typeof AuthenticatedProductSyncRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/shorts': typeof ShortsRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/product-sync': typeof AuthenticatedProductSyncRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/cart'
+    | '/shorts'
     | '/account'
     | '/dashboard'
     | '/product-sync'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/cart'
+    | '/shorts'
     | '/account'
     | '/dashboard'
     | '/product-sync'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/cart'
+    | '/shorts'
     | '/_authenticated/account'
     | '/_authenticated/dashboard'
     | '/_authenticated/product-sync'
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
+  ShortsRoute: typeof ShortsRoute
   ApiChatRoute: typeof ApiChatRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
@@ -180,6 +193,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/shorts': {
+      id: '/shorts'
+      path: '/shorts'
+      fullPath: '/shorts'
+      preLoaderRoute: typeof ShortsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
+  ShortsRoute: ShortsRoute,
   ApiChatRoute: ApiChatRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,

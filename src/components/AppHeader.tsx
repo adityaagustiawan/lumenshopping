@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Search, ShoppingBag, MessageCircle, User as UserIcon, LogOut } from "lucide-react";
+import { Search, ShoppingBag, MessageCircle, User as UserIcon, LogOut, Play } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,9 @@ export function AppHeader() {
           />
         </form>
         <nav className="flex items-center gap-1">
+          <Button asChild variant="ghost" size="icon" aria-label="Shorts">
+            <Link to="/shorts"><Play className="w-5 h-5" /></Link>
+          </Button>
           <Button asChild variant="ghost" size="icon" aria-label="AI Assistant">
             <Link to={user ? "/chat" : "/auth"}><MessageCircle className="w-5 h-5" /></Link>
           </Button>
