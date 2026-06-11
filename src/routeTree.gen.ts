@@ -19,6 +19,7 @@ import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedProductSyncRouteImport } from './routes/_authenticated/product-sync'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
@@ -73,6 +74,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/shorts': typeof ShortsRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/shorts': typeof ShortsRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/shorts': typeof ShortsRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/product-sync': typeof AuthenticatedProductSyncRoute
   '/api/chat': typeof ApiChatRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/shorts'
     | '/account'
+    | '/assistant'
     | '/dashboard'
     | '/product-sync'
     | '/api/chat'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/shorts'
     | '/account'
+    | '/assistant'
     | '/dashboard'
     | '/product-sync'
     | '/api/chat'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/shorts'
     | '/_authenticated/account'
+    | '/_authenticated/assistant'
     | '/_authenticated/dashboard'
     | '/_authenticated/product-sync'
     | '/api/chat'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/assistant': {
+      id: '/_authenticated/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AuthenticatedAssistantRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -289,6 +308,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProductSyncRoute: typeof AuthenticatedProductSyncRoute
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
@@ -297,6 +317,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProductSyncRoute: AuthenticatedProductSyncRoute,
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
