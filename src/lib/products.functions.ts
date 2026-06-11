@@ -17,11 +17,20 @@ export type Product = {
   stock: number;
   location: string;
   is_featured: boolean;
+  product_source_id?: string | null;
+  external_id?: string | null;
+  metadata?: {
+    platform?: Platform;
+    affiliate_link?: string;
+    seller_type?: 'affiliate' | 'own-store';
+    additional_images?: string[];
+    video_url?: string;
+    [key: string]: any;
+  };
+  // Computed properties for backward compatibility
   platform?: Platform;
   affiliate_link?: string;
   seller_type?: 'affiliate' | 'own-store';
-  external_id?: string;
-  additional_images?: string[];
   video_url?: string;
 };
 
