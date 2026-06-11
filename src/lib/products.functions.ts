@@ -25,6 +25,8 @@ export type Product = {
     seller_type?: 'affiliate' | 'own-store';
     additional_images?: string[];
     video_url?: string;
+    promo_badge?: string;
+    promo_type?: string;
     [key: string]: any;
   };
   // Computed properties for backward compatibility
@@ -32,6 +34,8 @@ export type Product = {
   affiliate_link?: string;
   seller_type?: 'affiliate' | 'own-store';
   video_url?: string;
+  promo_badge?: string;
+  promo_type?: string;
 };
 
 export type Category = {

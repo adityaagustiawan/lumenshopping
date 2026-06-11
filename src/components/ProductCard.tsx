@@ -9,6 +9,33 @@ export function ProductCard({ p }: { p: Product }) {
   const discount = p.compare_at_cents ? Math.round((1 - p.price_cents / p.compare_at_cents) * 100) : 0;
   const platformInfo = getPlatformInfo(p.platform);
   const isAffiliate = p.seller_type === 'affiliate' && p.affiliate_link;
+  const promoBadge = p.metadata?.promo_badge || p.promo_badge;
+  const promoType = p.metadata?.promo_type || p.promo_type;
+  
+  // Define promo badge colors based on type
+  const getPromoBadgeStyle = (type?: string) => {
+    switch (type) {
+      case 'flash_sale':
+      case 'mega_sale':
+      case 'hot_deal':
+        return 'bg-gradient-to-r from-red-500 to-orange-500 text-white';
+      case 'free_gift':
+      case 'bogo':
+        return 'bg-gradient-to-r from-green-500 to-emerald-500 text-white';
+      case 'bestseller':
+      case 'top_rated':
+      case 'popular':
+        return 'bg-gradient-to-r from-yellow-500 to-amber-500 text-white';
+      case 'new':
+      case 'exclusive':
+        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
+      case 'premium':
+      case 'collectors':
+        return 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white';
+      default:
+        return 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white';
+    }
+  };
 
   const handleAffiliateClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,9 +63,16 @@ export function ProductCard({ p }: { p: Product }) {
             className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
           />
           {discount > 0 && (
-            <span className="absolute top-2 left-2 bg-discount text-accent-foreground text-[10px] font-medium px-2 py-1 rounded-full">
+            <span className="absolute top-2 left-2 bg-discount text-accent-foreground text-[10px] font-medium px-2 py-1 rounded-full shadow-md">
               −{discount}%
             </span>
+          )}
+          
+          {/* Promo badge */}
+          {promoBadge && (
+            <div className={`absolute top-2 left-2 ${discount > 0 ? 'top-10' : ''} ${getPromoBadgeStyle(promoType)} text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse`}>
+              {promoBadge}
+            </div>
           )}
           
           {/* Platform badge */}
@@ -110,9 +144,16 @@ export function ProductCard({ p }: { p: Product }) {
           className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
         />
         {discount > 0 && (
-          <span className="absolute top-2 left-2 bg-discount text-accent-foreground text-[10px] font-medium px-2 py-1 rounded-full">
+          <span className="absolute top-2 left-2 bg-discount text-accent-foreground text-[10px] font-medium px-2 py-1 rounded-full shadow-md">
             −{discount}%
           </span>
+        )}
+        
+        {/* Promo badge */}
+        {promoBadge && (
+          <div className={`absolute top-2 left-2 ${discount > 0 ? 'top-10' : ''} ${getPromoBadgeStyle(promoType)} text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse`}>
+            {promoBadge}
+          </div>
         )}
         
         {/* Platform badge */}
