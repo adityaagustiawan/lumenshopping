@@ -196,17 +196,130 @@ export function generateDiscountSummary(products: any[]): {
 
 /**
  * Check if query is discount-related
+ * Enhanced with platform-specific keywords
  */
 export function isDiscountQuery(query: string): boolean {
   const discountKeywords = [
+    // General discount terms
     'discount', 'deal', 'sale', 'offer', 'promo', 'promotion',
     'cheap', 'affordable', 'bargain', 'clearance', 'markdown',
     'reduced', 'save', 'savings', 'special', 'coupon', 'voucher',
-    'percent off', '% off', 'price drop', 'best price'
+    'percent off', '% off', 'price drop', 'best price', 'lowest price',
+    
+    // Platform-specific terms
+    'lightning deal', 'prime day', 'black friday', 'cyber monday',
+    'flash sale', 'rollback', 'circle offer', 'super deal', 'choice day',
+    'warehouse deal', 'daily deal', 'best offer', 'hot sale',
+    
+    // Action-oriented terms
+    'compare price', 'price match', 'price comparison', 'find deal',
+    'best deal', 'top deal', 'cheapest', 'budget', 'under $',
+    
+    // Time-sensitive terms
+    'today', 'now', 'limited time', 'ending soon', 'last chance',
+    'hurry', 'quick', 'expires', 'temporary'
   ];
   
   const lowerQuery = query.toLowerCase();
   return discountKeywords.some(keyword => lowerQuery.includes(keyword));
+}
+
+/**
+ * Detect platform from query or product data
+ */
+export function detectPlatform(query: string, product?: any): string | null {
+  const lowerQuery = query.toLowerCase();
+  const platforms = [
+    { name: 'amazon', keywords: ['amazon', 'amzn', 'prime'] },
+    { name: 'shopify', keywords: ['shopify'] },
+    { name: 'woocommerce', keywords: ['woocommerce', 'woo'] },
+    { name: 'ebay', keywords: ['ebay'] },
+    { name: 'aliexpress', keywords: ['aliexpress', 'ali express', 'alibaba'] },
+    { name: 'walmart', keywords: ['walmart', 'wmt'] },
+    { name: 'target', keywords: ['target'] },
+    { name: 'etsy', keywords: ['etsy'] },
+    { name: 'bestbuy', keywords: ['best buy', 'bestbuy'] },
+    { name: 'costco', keywords: ['costco'] }
+  ];
+  
+  for (const platform of platforms) {
+    if (platform.keywords.some(keyword => lowerQuery.includes(keyword))) {
+      return platform.name;
+    }
+  }
+  
+  return product?.platform || null;
+}
+
+/**
+ * Enhanced discount percentage calculation with rounding options
+ */
+export function calculateDiscountPercentageEnhanced(
+  originalPrice: number,
+  discountedPrice: number,
+  decimals: number = 0
+): number {
+  if (originalPrice <= 0) return 0;
+  const percentage = ((originalPrice - discountedPrice) / originalPrice) * 100;
+  return decimals > 0
+    ? Math.round(percentage * Math.pow(10, decimals)) / Math.pow(10, decimals)
+    : Math.round(percentage);
+}
+
+/**
+ * Categorize discount quality
+ */
+export function categorizeDiscount(discountPercentage: number): {
+  category: string;
+  emoji: string;
+  description: string;
+} {
+  if (discountPercentage >= 50) {
+    return {
+      category: 'exceptional',
+      emoji: '🔥',
+      description: 'Exceptional Deal'
+    };
+  } else if (discountPercentage >= 30) {
+    return {
+      category: 'best',
+      emoji: '🏆',
+      description: 'Best Deal'
+    };
+  } else if (discountPercentage >= 20) {
+    return {
+      category: 'good',
+      emoji: '⭐',
+      description: 'Good Deal'
+    };
+  } else if (discountPercentage >= 10) {
+    return {
+      category: 'moderate',
+      emoji: '💰',
+      description: 'Moderate Savings'
+    };
+  } else {
+    return {
+      category: 'minimal',
+      emoji: '💵',
+      description: 'Small Savings'
+    };
+  }
+}
+
+/**
+ * Check if discount is time-sensitive
+ */
+export function isTimeSensitive(product: any): boolean {
+  if (!product) return false;
+  
+  const timeSensitiveKeywords = [
+    'lightning', 'flash', 'limited time', 'ending soon', 'today only',
+    'hourly', 'daily deal', 'expires', 'last chance'
+  ];
+  
+  const productText = `${product.name} ${product.description || ''} ${product.tags || ''}`.toLowerCase();
+  return timeSensitiveKeywords.some(keyword => productText.includes(keyword));
 }
 
 // Made with Bob

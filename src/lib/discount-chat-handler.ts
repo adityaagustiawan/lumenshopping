@@ -258,31 +258,71 @@ export function formatProductsForAI(products: any[]): string {
 }
 
 /**
- * Integration with Coze AI
+ * Enhanced Integration with Coze AI (2026 Update)
  */
 export async function sendToCozeAI(
   message: string,
-  conversationId?: string
+  conversationId?: string,
+  context?: {
+    products?: any[];
+    userPreferences?: any;
+    platformFilter?: string;
+  }
 ): Promise<any> {
-  const { botId, apiEndpoint } = COZE_AI_CONFIG;
+  const { botId, apiEndpoint, apiVersion } = COZE_AI_CONFIG;
   
   try {
+    // Prepare enhanced context for Coze AI
+    const enhancedMessage = context?.products
+      ? `${message}\n\n[Context: ${context.products.length} products available across multiple e-commerce platforms]`
+      : message;
+    
+    const requestBody: any = {
+      bot_id: botId,
+      user_id: conversationId || 'default_user',
+      query: enhancedMessage,
+      stream: false,
+      // Enhanced features for 2026
+      additional_messages: [],
+    };
+    
+    // Add platform context if available
+    if (context?.platformFilter) {
+      requestBody.additional_messages.push({
+        role: 'system',
+        content: `User is specifically interested in deals from ${context.platformFilter} platform.`
+      });
+    }
+    
+    // Add product context for better recommendations
+    if (context?.products && context.products.length > 0) {
+      const productSummary = context.products.slice(0, 10).map(p => ({
+        name: p.name,
+        price: p.price,
+        originalPrice: p.originalPrice,
+        platform: p.platform,
+        discount: p.originalPrice ? Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100) : 0
+      }));
+      
+      requestBody.additional_messages.push({
+        role: 'system',
+        content: `Available products with discounts: ${JSON.stringify(productSummary)}`
+      });
+    }
+    
     const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.COZE_API_KEY || ''}`,
+        'X-API-Version': apiVersion || 'v3',
       },
-      body: JSON.stringify({
-        bot_id: botId,
-        user_id: conversationId || 'default_user',
-        query: message,
-        stream: false,
-      }),
+      body: JSON.stringify(requestBody),
     });
     
     if (!response.ok) {
-      throw new Error(`Coze AI API error: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Coze AI API error: ${response.statusText} - ${errorText}`);
     }
     
     return await response.json();
@@ -290,6 +330,100 @@ export async function sendToCozeAI(
     console.error('Error communicating with Coze AI:', error);
     throw error;
   }
+}
+
+/**
+ * Batch process multiple discount queries
+ */
+export async function batchProcessDiscountQueries(
+  queries: string[],
+  products: any[]
+): Promise<DiscountChatResponse[]> {
+  const results: DiscountChatResponse[] = [];
+  
+  for (const query of queries) {
+    try {
+      const response = await handleDiscountQuery({
+        products,
+        userQuery: query,
+      });
+      results.push(response);
+    } catch (error) {
+      console.error(`Error processing query "${query}":`, error);
+      results.push({
+        message: `Error processing query: ${query}`,
+        metadata: {
+          queryType: 'error',
+          hasDiscounts: false,
+          processingTime: 0,
+        },
+      });
+    }
+  }
+  
+  return results;
+}
+
+/**
+ * Get platform-specific discount insights
+ */
+export function getPlatformInsights(products: any[], platform: string): {
+  totalProducts: number;
+  averageDiscount: number;
+  bestDeal: any;
+  platformSpecificTips: string[];
+} {
+  const platformProducts = products.filter(p =>
+    p.platform?.toLowerCase() === platform.toLowerCase() &&
+    p.originalPrice && p.price < p.originalPrice
+  );
+  
+  if (platformProducts.length === 0) {
+    return {
+      totalProducts: 0,
+      averageDiscount: 0,
+      bestDeal: null,
+      platformSpecificTips: []
+    };
+  }
+  
+  const summary = generateDiscountSummary(platformProducts);
+  const sortedProducts = sortByDiscount(platformProducts);
+  
+  // Platform-specific tips
+  const tips: Record<string, string[]> = {
+    amazon: [
+      'Check for Lightning Deals that refresh hourly',
+      'Subscribe & Save can add 5-15% extra discount',
+      'Prime members get exclusive deals',
+      'Warehouse Deals offer open-box discounts'
+    ],
+    shopify: [
+      'Sign up for email to get 10-15% off first order',
+      'Check for bundle deals to save more',
+      'Flash sales often happen on weekends',
+      'Follow store on social media for exclusive codes'
+    ],
+    walmart: [
+      'Rollback prices are temporary - act fast',
+      'Choose store pickup to save on shipping',
+      'Check clearance section for deep discounts',
+      'Price match guarantee available'
+    ],
+    aliexpress: [
+      'New users get up to 50% off first order',
+      'Collect coins daily for extra discounts',
+      'Choice Day (monthly) has best deals',
+      'Bulk orders often get better prices'
+    ]
+  };
+  
+  return {
+    totalProducts: platformProducts.length,
+    averageDiscount: summary.averageDiscount,
+    bestDeal: sortedProducts[0],
+    platformSpecificTips: tips[platform.toLowerCase()] || []
+  };
 }
 
 /**
