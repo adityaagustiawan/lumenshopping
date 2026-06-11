@@ -12,7 +12,7 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
       return { success: true, message: "Products already exist!", count: existing.length };
     }
 
-    // Sample products (Indonesian market-focused, with affiliate products)
+    // Sample products (Indonesian market-focused)
     const products = [
       // --- OWN STORE PRODUCTS ---
       {
@@ -27,7 +27,8 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         sold_count: 154,
         stock: 32,
         location: "Jakarta",
-        is_featured: true
+        is_featured: true,
+        metadata: {}
       },
       {
         name: "Minimalist Cotton T-Shirt",
@@ -41,7 +42,8 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         sold_count: 231,
         stock: 85,
         location: "Bandung",
-        is_featured: true
+        is_featured: true,
+        metadata: {}
       },
 
       // --- AFFILIATE PRODUCTS FROM MAJOR PLATFORMS ---
@@ -55,12 +57,14 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         category_slug: "electronics",
         rating: 4.9,
         sold_count: 1247,
-        stock: 0, // Affiliate product
+        stock: 0,
         location: "Indonesia",
         is_featured: true,
-        platform: 'tokopedia',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.tokopedia.com/search?q=sony+wh-1000xm5'
+        metadata: {
+          platform: 'tokopedia',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.tokopedia.com/search?q=sony+wh-1000xm5'
+        }
       },
       {
         name: "Adidas Ultraboost Running Shoes",
@@ -75,9 +79,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: true,
-        platform: 'shopee',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://shopee.co.id/search?keyword=adidas+ultraboost'
+        metadata: {
+          platform: 'shopee',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://shopee.co.id/search?keyword=adidas+ultraboost'
+        }
       },
       {
         name: "iPhone 15 Pro Max 256GB",
@@ -92,9 +98,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: true,
-        platform: 'lazada',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.lazada.co.id/catalog/?q=iphone+15+pro+max'
+        metadata: {
+          platform: 'lazada',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.lazada.co.id/catalog/?q=iphone+15+pro+max'
+        }
       },
       {
         name: "Cuisinart Air Fryer 5.5L",
@@ -109,9 +117,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: false,
-        platform: 'bukalapak',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.bukalapak.com/products?search%5Bkeywords%5D=air+fryer'
+        metadata: {
+          platform: 'bukalapak',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.bukalapak.com/products?search%5Bkeywords%5D=air+fryer'
+        }
       },
       {
         name: "Innisfree Green Tea Cleanser",
@@ -126,9 +136,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: false,
-        platform: 'blibli',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.blibli.com/cari?search=innisfree+green+tea'
+        metadata: {
+          platform: 'blibli',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.blibli.com/cari?search=innisfree+green+tea'
+        }
       },
       {
         name: "Adjustable Dumbbell Set 40kg",
@@ -143,9 +155,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: false,
-        platform: 'amazon',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.amazon.com/s?k=adjustable+dumbbells'
+        metadata: {
+          platform: 'amazon',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.amazon.com/s?k=adjustable+dumbbells'
+        }
       },
       {
         name: "Korean Drama Novel Collection",
@@ -160,9 +174,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: false,
-        platform: 'ebay',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.ebay.com/sch/i.html?_nkw=korean+novel'
+        metadata: {
+          platform: 'ebay',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.ebay.com/sch/i.html?_nkw=korean+novel'
+        }
       },
       {
         name: "Smart Watch Series X with GPS",
@@ -177,9 +193,11 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: true,
-        platform: 'shopee',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://shopee.co.id/search?keyword=smart+watch'
+        metadata: {
+          platform: 'shopee',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://shopee.co.id/search?keyword=smart+watch'
+        }
       },
       {
         name: "Indoor Plant Pot Ceramic Set",
@@ -194,14 +212,16 @@ export const seedSampleProducts = createServerFn({ method: "POST" })
         stock: 0,
         location: "Indonesia",
         is_featured: false,
-        platform: 'tokopedia',
-        seller_type: 'affiliate',
-        affiliate_link: 'https://www.tokopedia.com/search?q=pot+tanaman+keramik'
+        metadata: {
+          platform: 'tokopedia',
+          seller_type: 'affiliate',
+          affiliate_link: 'https://www.tokopedia.com/search?q=pot+tanaman+keramik'
+        }
       }
     ];
 
     // Insert the sample products
-    const { error } = await supabaseAdmin.from("products").insert(products as any);
+    const { error } = await supabaseAdmin.from("products").insert(products);
     
     if (error) {
       throw new Error(error.message);
