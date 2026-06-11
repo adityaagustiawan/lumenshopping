@@ -384,8 +384,8 @@ function ChatPage() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-5">
           {messages.length === 0 ? (
             <div className="text-center py-16 space-y-3">
-              <div className="inline-flex w-12 h-12 rounded-full bg-accent/15 items-center justify-center">
-                <Sparkles className="w-5 h-5 text-accent" />
+              <div className="inline-flex w-16 h-16 rounded-full bg-accent/15 items-center justify-center p-2">
+                <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
               </div>
               <h3 className="font-display text-2xl">Hi, I'm Lumen AI</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
@@ -410,13 +410,13 @@ function ChatPage() {
             </div>
           ) : (
             messages.map((m) => (
-              <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""}`}>
+              <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 {m.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-4 h-4 text-accent" />
+                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0 p-1">
+                    <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
                   </div>
                 )}
-                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap transform transition-all hover:scale-[1.02] ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
                   {m.content}
                 </div>
               </div>
@@ -425,9 +425,9 @@ function ChatPage() {
 
           {/* Typing indicator */}
           {isTyping && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-accent" />
+            <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center p-1">
+                <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
               </div>
               <div className="bg-secondary rounded-2xl px-4 py-3 flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" />
