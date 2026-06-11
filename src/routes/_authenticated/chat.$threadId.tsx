@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Send, Sparkles, Image, Mic, Paperclip } from "lucide-react";
 import { listThreads, createThread, deleteThread } from "@/lib/threads.functions";
 import { Button } from "@/components/ui/button";
+import { processMultimodalInput } from "@/lib/multimodal/multimodal-handler";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
@@ -29,6 +30,9 @@ function ChatPage() {
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -120,6 +124,186 @@ function ChatPage() {
       setError(err.message);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (file: File) => {
+    setIsTyping(true);
+    setError(null);
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: `📄 Uploaded file: ${file.name}`,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      const result = await processMultimodalInput({
+        type: 'file',
+        data: file,
+        metadata: {
+          fileName: file.name,
+          mimeType: file.type,
+        }
+      });
+
+      const aiMessage: Message = {
+        id: Date.now().toString() + "-ai",
+        role: "assistant",
+        content: result.content,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (err: any) {
+      console.error("File processing error:", err);
+      const errorMessage: Message = {
+        id: Date.now().toString() + "-error",
+        role: "assistant",
+        content: `Sorry, there was an error processing the file: ${err.message}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      setError(err.message);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (file: File) => {
+    setIsTyping(true);
+    setError(null);
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: `📸 Uploaded image: ${file.name}`,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    try {
+      const result = await processMultimodalInput({
+        type: 'image',
+        data: file,
+        metadata: {
+          fileName: file.name,
+          mimeType: file.type,
+        }
+      });
+
+      const aiMessage: Message = {
+        id: Date.now().toString() + "-ai",
+        role: "assistant",
+        content: result.content,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (err: any) {
+      console.error("Image processing error:", err);
+      const errorMessage: Message = {
+        id: Date.now().toString() + "-error",
+        role: "assistant",
+        content: `Sorry, there was an error processing the image: ${err.message}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      setError(err.message);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  // Handle voice recording
+  const handleVoiceRecording = async () => {
+    if (isRecording) {
+      // Stop recording logic would go here
+      setIsRecording(false);
+      return;
+    }
+
+    setIsRecording(true);
+    setError(null);
+
+    try {
+      // Request microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: Blob[] = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        stream.getTracks().forEach(track => track.stop());
+
+        setIsTyping(true);
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          role: "user",
+          content: `🎤 Voice message recorded`,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, userMessage]);
+
+        try {
+          const result = await processMultimodalInput({
+            type: 'voice',
+            data: audioBlob,
+            metadata: {
+              mimeType: 'audio/webm',
+            }
+          });
+
+          const aiMessage: Message = {
+            id: Date.now().toString() + "-ai",
+            role: "assistant",
+            content: result.content,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, aiMessage]);
+        } catch (err: any) {
+          console.error("Voice processing error:", err);
+          const errorMessage: Message = {
+            id: Date.now().toString() + "-error",
+            role: "assistant",
+            content: `Sorry, there was an error processing the voice: ${err.message}`,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, errorMessage]);
+          setError(err.message);
+        } finally {
+          setIsTyping(false);
+        }
+      };
+
+      mediaRecorder.start();
+
+      // Auto-stop after 60 seconds
+      setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          setIsRecording(false);
+        }
+      }, 60000);
+
+      // Stop recording after 5 seconds for demo
+      setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          setIsRecording(false);
+        }
+      }, 5000);
+
+    } catch (err: any) {
+      console.error("Microphone access error:", err);
+      setError("Could not access microphone. Please grant permission.");
+      setIsRecording(false);
     }
   };
 
@@ -256,14 +440,59 @@ function ChatPage() {
 
         {/* Chat input */}
         <form onSubmit={handleSend} className="border-t border-border p-3 flex gap-2 items-end">
+          {/* Hidden file inputs */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.xlsx,.xls,.pdf,.txt,.json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleFileUpload(file);
+              e.target.value = '';
+            }}
+          />
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+              e.target.value = '';
+            }}
+          />
+          
           <div className="flex gap-1">
-            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+              onClick={() => fileInputRef.current?.click()}
+              title="Upload file (CSV, Excel, PDF)"
+            >
               <Paperclip className="w-4 h-4" />
             </Button>
-            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+              onClick={() => imageInputRef.current?.click()}
+              title="Upload image"
+            >
               <Image className="w-4 h-4" />
             </Button>
-            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={`h-10 w-10 rounded-full ${isRecording ? 'bg-red-500 text-white hover:bg-red-600' : ''}`}
+              onClick={handleVoiceRecording}
+              title={isRecording ? "Recording... (click to stop)" : "Record voice message"}
+            >
               <Mic className="w-4 h-4" />
             </Button>
           </div>
