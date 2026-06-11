@@ -5,7 +5,7 @@ import { Heart, MessageCircle, Share2, MoreVertical, Volume2, VolumeX, ChevronUp
 import { formatIDR } from "@/lib/format";
 import type { Product } from "@/lib/products.functions";
 
-// Sample video products with Pexels video URLs (free, reliable, CORS-friendly)
+// Sample video products with sample-videos.com URLs (reliable, CORS-friendly)
 const videoProducts: (Product & { video_url: string })[] = [
   {
     id: "v1",
@@ -21,7 +21,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 50,
     location: "Jakarta",
     is_featured: true,
-    video_url: "https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=164&oauth2_token_id=57447761"
+    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"
   },
   {
     id: "v2",
@@ -37,7 +37,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 30,
     location: "Bandung",
     is_featured: true,
-    video_url: "https://player.vimeo.com/external/370467553.sd.mp4?s=e90dcaba73c19e0e36f03406b47bbd6992dd6c1c&profile_id=164&oauth2_token_id=57447761"
+    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
   },
   {
     id: "v3",
@@ -53,7 +53,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 75,
     location: "Surabaya",
     is_featured: false,
-    video_url: "https://player.vimeo.com/external/395929177.sd.mp4?s=9f0f8a0b3c3f3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
+    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_5mb.mp4"
   },
   {
     id: "v4",
@@ -69,7 +69,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 40,
     location: "Jakarta",
     is_featured: false,
-    video_url: "https://player.vimeo.com/external/404261628.sd.mp4?s=0a7d2e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
+    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_10mb.mp4"
   },
   {
     id: "v5",
@@ -85,7 +85,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 100,
     location: "Medan",
     is_featured: false,
-    video_url: "https://player.vimeo.com/external/373580466.sd.mp4?s=1e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
+    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_20mb.mp4"
   }
 ];
 
