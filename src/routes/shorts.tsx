@@ -5,7 +5,7 @@ import { Heart, MessageCircle, Share2, MoreVertical, Volume2, VolumeX, ChevronUp
 import { formatIDR } from "@/lib/format";
 import type { Product } from "@/lib/products.functions";
 
-// Sample video products with sample-videos.com URLs (reliable, CORS-friendly)
+// Sample video products with reliable test video URLs
 const videoProducts: (Product & { video_url: string })[] = [
   {
     id: "v1",
@@ -21,7 +21,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 50,
     location: "Jakarta",
     is_featured: true,
-    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
   },
   {
     id: "v2",
@@ -37,7 +37,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 30,
     location: "Bandung",
     is_featured: true,
-    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_2mb.mp4"
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
   },
   {
     id: "v3",
@@ -53,7 +53,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 75,
     location: "Surabaya",
     is_featured: false,
-    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_5mb.mp4"
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
   },
   {
     id: "v4",
@@ -69,7 +69,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 40,
     location: "Jakarta",
     is_featured: false,
-    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_10mb.mp4"
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
   },
   {
     id: "v5",
@@ -85,7 +85,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 100,
     location: "Medan",
     is_featured: false,
-    video_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_20mb.mp4"
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
   }
 ];
 
