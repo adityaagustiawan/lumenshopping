@@ -1,29 +1,34 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Star, MapPin, ExternalLink, ShoppingCart } from "lucide-react";
 import type { Product } from "@/lib/products.functions";
 import { formatIDR, formatCompact } from "@/lib/format";
 import { getPlatformInfo } from "@/lib/platforms";
 
 export function ProductCard({ p }: { p: Product }) {
+  const navigate = useNavigate();
   const discount = p.compare_at_cents ? Math.round((1 - p.price_cents / p.compare_at_cents) * 100) : 0;
   const platformInfo = getPlatformInfo(p.platform);
   const isAffiliate = p.seller_type === 'affiliate' && p.affiliate_link;
 
   const handleAffiliateClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     window.open(p.affiliate_link, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate({ to: "/product/$slug", params: { slug: p.slug } });
   };
 
   if (isAffiliate) {
     return (
-      <a
-        href={p.affiliate_link}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleAffiliateClick}
-        className="group block rounded-2xl bg-card overflow-hidden border border-border/60 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)] transition-all"
-      >
-        <div className="aspect-square overflow-hidden bg-muted relative">
+      <div className="group block rounded-2xl bg-card overflow-hidden border border-border/60 hover:border-accent/40 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)] transition-all">
+        <div
+          className="aspect-square overflow-hidden bg-muted relative cursor-pointer"
+          onClick={handleImageClick}
+        >
           <img
             src={p.image_url}
             alt={p.name}
@@ -70,14 +75,23 @@ export function ProductCard({ p }: { p: Product }) {
             </span>
           </div>
           
-          {/* Call to action button */}
-          <div className="pt-2">
-            <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-accent to-blue-600 hover:from-accent/90 hover:to-blue-500 text-white text-xs font-semibold py-2 rounded-xl transition-all">
+          {/* Call to action buttons */}
+          <div className="pt-2 space-y-2">
+            <button
+              onClick={handleAffiliateClick}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-accent to-blue-600 hover:from-accent/90 hover:to-blue-500 text-white text-xs font-semibold py-2 rounded-xl transition-all"
+            >
               <ExternalLink className="w-3.5 h-3.5" /> Buy on {platformInfo?.name}
+            </button>
+            <button
+              onClick={handleImageClick}
+              className="w-full text-xs text-muted-foreground hover:text-accent transition-colors"
+            >
+              View Details
             </button>
           </div>
         </div>
-      </a>
+      </div>
     );
   }
 

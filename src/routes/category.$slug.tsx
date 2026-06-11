@@ -2,16 +2,20 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { getCategory } from "@/lib/products.functions";
 import { ProductCard } from "@/components/ProductCard";
-import type { Product } from "@/lib/products.functions";
+import type { Product, Platform } from "@/lib/products.functions";
 import {
   additionalFashionProducts,
   additionalHomeProducts,
   additionalBeautyProducts,
   additionalSportsProducts,
   additionalBooksProducts,
+  additionalToysProducts,
+  additionalFoodProducts,
+  additionalAutomotiveProducts,
+  additionalPetProducts,
 } from "@/data/additional-products";
 import { useState, useMemo } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown, ChevronUp, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +25,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+// Electronics subcategories
+const electronicsSubcategories = [
+  { id: "smartphones", name: "Smartphones & Tablets", icon: "📱" },
+  { id: "computers", name: "Computers & Laptops", icon: "💻" },
+  { id: "audio", name: "Audio & Headphones", icon: "🎧" },
+  { id: "cameras", name: "Cameras & Photography", icon: "📷" },
+  { id: "gaming", name: "Gaming", icon: "🎮" },
+  { id: "wearables", name: "Wearables & Smartwatches", icon: "⌚" },
+  { id: "accessories", name: "Accessories", icon: "🔌" },
+  { id: "smart-home", name: "Smart Home", icon: "🏠" },
+];
+
+// Product videos for affiliate marketing (Shopee-style shorts)
+const productVideos = [
+  {
+    id: "v1",
+    title: "iPhone 15 Pro Max Unboxing",
+    thumbnail: "https://images.unsplash.com/photo-1592750470538-787ea4e2e1b8?w=400&q=80",
+    duration: "0:45",
+    views: "125K",
+    productSlug: "apple-iphone-15-pro",
+  },
+  {
+    id: "v2",
+    title: "Sony WH-1000XM5 Review",
+    thumbnail: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+    duration: "1:20",
+    views: "89K",
+    productSlug: "sony-wh1000xm5",
+  },
+  {
+    id: "v3",
+    title: "MacBook Air M2 Performance Test",
+    thumbnail: "https://images.unsplash.com/photo-1517336714731-4896decb346d?w=400&q=80",
+    duration: "2:15",
+    views: "203K",
+    productSlug: "macbook-air-m2",
+  },
+  {
+    id: "v4",
+    title: "AirPods Pro 2 Sound Test",
+    thumbnail: "https://images.unsplash.com/photo-1600267214827-459246976967?w=400&q=80",
+    duration: "1:05",
+    views: "156K",
+    productSlug: "airpods-pro-2",
+  },
+];
 
 // Sample products data for all categories - real e-commerce inspired!
 const sampleProducts: Record<string, Product[]> = {
@@ -451,7 +508,19 @@ const sampleProducts: Record<string, Product[]> = {
       affiliate_link: "https://www.tokopedia.com/search?q=bestselling+novels"
     },
     ...additionalBooksProducts,
-  ]
+  ],
+  toys: [
+    ...additionalToysProducts,
+  ],
+  food: [
+    ...additionalFoodProducts,
+  ],
+  automotive: [
+    ...additionalAutomotiveProducts,
+  ],
+  pets: [
+    ...additionalPetProducts,
+  ],
 };
 
 const categoryQuery = (slug: string) => queryOptions({
@@ -485,6 +554,8 @@ function CategoryPage() {
   const [sortBy, setSortBy] = useState("featured");
   const [platformFilter, setPlatformFilter] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [isSubcategoriesOpen, setIsSubcategoriesOpen] = useState(slug === "electronics");
   
   // If no products from DB, use our sample data!
   const allProducts = data.products.length > 0
@@ -493,7 +564,9 @@ function CategoryPage() {
   
   // Get unique platforms from products
   const platforms = useMemo(() => {
-    const uniquePlatforms = new Set(allProducts.map(p => p.platform).filter(Boolean));
+    const uniquePlatforms = new Set(
+      allProducts.map(p => p.platform).filter((p): p is Platform => p !== undefined)
+    );
     return Array.from(uniquePlatforms);
   }, [allProducts]);
   
@@ -562,6 +635,84 @@ function CategoryPage() {
           {productsToShow.length} of {allProducts.length} products
         </p>
       </div>
+
+      {/* Electronics Subcategories */}
+      {slug === "electronics" && (
+        <Collapsible open={isSubcategoriesOpen} onOpenChange={setIsSubcategoriesOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span className="flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4" />
+                Browse by Subcategory
+              </span>
+              {isSubcategoriesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {electronicsSubcategories.map((sub) => (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubcategory(selectedSubcategory === sub.id ? null : sub.id)}
+                  className={`rounded-xl p-4 text-center transition-all ${
+                    selectedSubcategory === sub.id
+                      ? "bg-accent text-accent-foreground shadow-lg scale-105"
+                      : "bg-card border border-border hover:border-accent hover:shadow-md"
+                  }`}
+                >
+                  <div className="text-3xl mb-2">{sub.icon}</div>
+                  <div className="text-xs font-medium leading-tight">{sub.name}</div>
+                </button>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Video Shorts Section - Only for electronics */}
+      {slug === "electronics" && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-2xl flex items-center gap-2">
+              <Play className="w-6 h-6 text-accent" />
+              Product Videos
+            </h2>
+            <span className="text-sm text-muted-foreground">Shopee-style shorts</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {productVideos.map((video) => (
+              <a
+                key={video.id}
+                href={`#${video.productSlug}`}
+                className="group relative rounded-2xl overflow-hidden bg-muted aspect-[9/16] hover:shadow-xl transition-all"
+              >
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Play className="w-8 h-8 text-accent fill-accent ml-1" />
+                  </div>
+                </div>
+                
+                {/* Video info */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                  <p className="text-sm font-semibold line-clamp-2 mb-1">{video.title}</p>
+                  <div className="flex items-center justify-between text-xs">
+                    <span>{video.duration}</span>
+                    <span>{video.views} views</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
       
       {/* Search and Filters */}
       <div className="space-y-4">
@@ -607,8 +758,8 @@ function CategoryPage() {
               <SelectContent>
                 <SelectItem value="all">All Platforms</SelectItem>
                 {platforms.map(platform => (
-                  <SelectItem key={platform} value={platform!}>
-                    {platform?.charAt(0).toUpperCase() + platform?.slice(1)}
+                  <SelectItem key={platform} value={platform}>
+                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -55,7 +55,6 @@ function Home() {
       <section>
         <div className="flex items-end justify-between mb-6">
           <h2 className="font-display text-3xl">Browse categories</h2>
-          <Link to="/products" className="text-sm font-medium text-accent hover:underline">View all</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {data.categories.map((c) => (
@@ -118,5 +117,16 @@ function Home() {
 }
 
 function categoryEmoji(slug: string) {
-  return { electronics: "📱", fashion: "👕", home: "🛋️", beauty: "✨", sports: "🏋️", books: "📚" }[slug] ?? "🛍️";
+  return {
+    electronics: "📱",
+    fashion: "👕",
+    home: "🛋️",
+    beauty: "✨",
+    sports: "🏋️",
+    books: "📚",
+    toys: "🧸",
+    food: "🍕",
+    automotive: "🚗",
+    pets: "🐾"
+  }[slug] ?? "🛍️";
 }
