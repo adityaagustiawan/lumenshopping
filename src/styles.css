@@ -1,5 +1,5 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
+@config "../src";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -110,12 +110,4 @@
   }
 }
 
-/* Hide scrollbar for shorts page */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+/* Made with Bob */

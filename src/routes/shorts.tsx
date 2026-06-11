@@ -5,7 +5,7 @@ import { Heart, MessageCircle, Share2, MoreVertical, Volume2, VolumeX, ChevronUp
 import { formatIDR } from "@/lib/format";
 import type { Product } from "@/lib/products.functions";
 
-// Sample video products with real video URLs from the internet
+// Sample video products with Pexels video URLs (free, reliable, CORS-friendly)
 const videoProducts: (Product & { video_url: string })[] = [
   {
     id: "v1",
@@ -21,7 +21,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 50,
     location: "Jakarta",
     is_featured: true,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+    video_url: "https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae35579b2bbdf&profile_id=164&oauth2_token_id=57447761"
   },
   {
     id: "v2",
@@ -37,7 +37,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 30,
     location: "Bandung",
     is_featured: true,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+    video_url: "https://player.vimeo.com/external/370467553.sd.mp4?s=e90dcaba73c19e0e36f03406b47bbd6992dd6c1c&profile_id=164&oauth2_token_id=57447761"
   },
   {
     id: "v3",
@@ -53,7 +53,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 75,
     location: "Surabaya",
     is_featured: false,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+    video_url: "https://player.vimeo.com/external/395929177.sd.mp4?s=9f0f8a0b3c3f3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
   },
   {
     id: "v4",
@@ -69,7 +69,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 40,
     location: "Jakarta",
     is_featured: false,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+    video_url: "https://player.vimeo.com/external/404261628.sd.mp4?s=0a7d2e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
   },
   {
     id: "v5",
@@ -85,7 +85,7 @@ const videoProducts: (Product & { video_url: string })[] = [
     stock: 100,
     location: "Medan",
     is_featured: false,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+    video_url: "https://player.vimeo.com/external/373580466.sd.mp4?s=1e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e&profile_id=164&oauth2_token_id=57447761"
   }
 ];
 
@@ -112,8 +112,30 @@ function ShortsPage() {
   const [likes, setLikes] = useState<Record<string, boolean>>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoErrors, setVideoErrors] = useState<Record<string, boolean>>({});
+  const [hasInteracted, setHasInteracted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  // Handle initial user interaction
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      setHasInteracted(true);
+      const currentVideo = videoRefs.current[currentIndex];
+      if (currentVideo && currentVideo.paused) {
+        currentVideo.play().catch(console.error);
+      }
+    };
+
+    if (!hasInteracted) {
+      window.addEventListener('click', handleFirstInteraction, { once: true });
+      window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+      
+      return () => {
+        window.removeEventListener('click', handleFirstInteraction);
+        window.removeEventListener('touchstart', handleFirstInteraction);
+      };
+    }
+  }, [hasInteracted, currentIndex]);
 
   // Handle video playback when index changes
   useEffect(() => {
@@ -122,19 +144,20 @@ function ShortsPage() {
       // Reset video to start
       currentVideo.currentTime = 0;
       
-      // Attempt to play
-      const playPromise = currentVideo.play();
-      
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.error("Video play error:", error);
-            // If autoplay fails, user needs to interact first
-            setIsPlaying(false);
-          });
+      // Attempt to play only if user has interacted
+      if (hasInteracted) {
+        const playPromise = currentVideo.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch((error) => {
+              console.error("Video play error:", error);
+              setIsPlaying(false);
+            });
+        }
       }
     }
 
@@ -145,7 +168,7 @@ function ShortsPage() {
         video.currentTime = 0;
       }
     });
-  }, [currentIndex]);
+  }, [currentIndex, hasInteracted]);
 
   // Handle video errors
   const handleVideoError = (productId: string, error: any) => {
@@ -155,6 +178,7 @@ function ShortsPage() {
 
   // Handle video click to play/pause
   const handleVideoClick = () => {
+    setHasInteracted(true);
     const currentVideo = videoRefs.current[currentIndex];
     if (currentVideo) {
       if (currentVideo.paused) {
@@ -214,40 +238,88 @@ function ShortsPage() {
             className="relative h-screen w-full snap-start snap-always flex items-center justify-center"
           >
             {/* Video Background */}
-            <video
-              ref={el => { videoRefs.current[index] = el; }}
-              className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-              src={product.video_url}
-              loop
-              muted={muted}
-              playsInline
-              preload="auto"
-              poster={product.image_url}
-              onClick={handleVideoClick}
-              onError={(e) => handleVideoError(product.id, e)}
-              onLoadedData={() => {
-                // Video loaded successfully
-                if (index === currentIndex) {
-                  const video = videoRefs.current[index];
-                  if (video) {
-                    video.play().catch(console.error);
+            {!videoErrors[product.id] ? (
+              <video
+                ref={el => { videoRefs.current[index] = el; }}
+                className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+                src={product.video_url}
+                loop
+                muted={muted}
+                playsInline
+                preload="metadata"
+                poster={product.image_url}
+                crossOrigin="anonymous"
+                onClick={handleVideoClick}
+                onError={(e) => {
+                  console.error(`Video load error for ${product.id}:`, e);
+                  handleVideoError(product.id, e);
+                }}
+                onLoadedMetadata={() => {
+                  console.log(`Video metadata loaded for ${product.id}`);
+                  // Video metadata loaded - ready to play
+                  if (index === currentIndex && hasInteracted) {
+                    const video = videoRefs.current[index];
+                    if (video && video.paused) {
+                      video.play().then(() => {
+                        console.log(`Video playing for ${product.id}`);
+                        setIsPlaying(true);
+                      }).catch((err) => {
+                        console.error(`Video play error for ${product.id}:`, err);
+                      });
+                    }
                   }
-                }
-              }}
-            />
+                }}
+                onPlay={() => {
+                  if (index === currentIndex) {
+                    setIsPlaying(true);
+                  }
+                }}
+                onPause={() => {
+                  if (index === currentIndex) {
+                    setIsPlaying(false);
+                  }
+                }}
+              />
+            ) : (
+              /* Fallback to poster image when video fails */
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
 
             {/* Video Error Overlay */}
             {videoErrors[product.id] && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
-                <div className="text-center text-white p-6">
-                  <p className="text-lg mb-2">Unable to load video</p>
-                  <p className="text-sm text-white/70">Please check your connection</p>
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-black/60 via-black/40 to-black/60 z-10">
+                <div className="text-center text-white p-8 bg-black/50 backdrop-blur-sm rounded-2xl max-w-sm mx-4">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <p className="text-lg font-semibold mb-2">Video Unavailable</p>
+                  <p className="text-sm text-white/70 mb-4">This video cannot be loaded at the moment</p>
+                  <p className="text-xs text-white/50">Showing product image instead</p>
+                </div>
+              </div>
+            )}
+
+            {/* Initial Play Prompt */}
+            {!hasInteracted && index === currentIndex && !videoErrors[product.id] && (
+              <div className="absolute inset-0 flex items-center justify-center z-10">
+                <div className="text-center text-white p-6 bg-black/50 backdrop-blur-sm rounded-2xl">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 flex items-center justify-center">
+                    <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />
+                  </div>
+                  <p className="text-lg font-semibold mb-2">Tap to start</p>
+                  <p className="text-sm text-white/70">Tap anywhere to play videos</p>
                 </div>
               </div>
             )}
 
             {/* Play/Pause Indicator */}
-            {!isPlaying && index === currentIndex && !videoErrors[product.id] && (
+            {hasInteracted && !isPlaying && index === currentIndex && !videoErrors[product.id] && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                 <div className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
                   <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-2" />

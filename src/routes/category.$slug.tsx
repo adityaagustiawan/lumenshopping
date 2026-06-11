@@ -574,6 +574,35 @@ function CategoryPage() {
   const productsToShow = useMemo(() => {
     let filtered = [...allProducts];
     
+    // Subcategory filter (for electronics)
+    if (selectedSubcategory && slug === "electronics") {
+      filtered = filtered.filter(p => {
+        const name = p.name.toLowerCase();
+        const desc = p.description.toLowerCase();
+        
+        switch (selectedSubcategory) {
+          case "smartphones":
+            return name.includes("iphone") || name.includes("phone") || name.includes("smartphone") || name.includes("galaxy");
+          case "computers":
+            return name.includes("macbook") || name.includes("laptop") || name.includes("computer") || name.includes("pc");
+          case "audio":
+            return name.includes("headphone") || name.includes("earbuds") || name.includes("speaker") || name.includes("airpods") || name.includes("audio") || name.includes("sony wh");
+          case "cameras":
+            return name.includes("camera") || name.includes("gopro") || name.includes("photography");
+          case "gaming":
+            return name.includes("gaming") || name.includes("playstation") || name.includes("xbox") || name.includes("nintendo") || name.includes("game");
+          case "wearables":
+            return name.includes("watch") || name.includes("wearable") || name.includes("fitness") || name.includes("tracker");
+          case "accessories":
+            return name.includes("cable") || name.includes("charger") || name.includes("mouse") || name.includes("keyboard") || name.includes("power bank") || name.includes("accessory");
+          case "smart-home":
+            return name.includes("smart") || name.includes("home") || name.includes("ring") || name.includes("hue") || name.includes("alexa");
+          default:
+            return true;
+        }
+      });
+    }
+    
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -623,7 +652,7 @@ function CategoryPage() {
     }
     
     return filtered;
-  }, [allProducts, searchQuery, platformFilter, priceRange, sortBy]);
+  }, [allProducts, searchQuery, platformFilter, priceRange, sortBy, selectedSubcategory, slug]);
   
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 space-y-6">
