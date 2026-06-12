@@ -5,21 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-
-// Safe wrapper for Supabase that never throws errors
-function safeSupabase() {
-  try {
-    const { supabase } = require("@/integrations/supabase/client");
-    return supabase;
-  } catch (e) {
-    // Return fully safe dummy object instead of throwing!
-    return {
-      auth: {
-        signOut: async () => ({ error: null })
-      }
-    };
-  }
-}
+import { supabase } from "@/integrations/supabase/client";
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -64,11 +50,10 @@ export function AppHeader() {
                 <DropdownMenuItem onClick={() => navigate({ to: "/account" })}>Account</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/chat" })}>AI Assistant</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={async () => { 
+                <DropdownMenuItem onClick={async () => {
                   try {
-                    const sb = safeSupabase();
-                    await sb.auth.signOut(); 
-                  } catch (e) {} 
+                    await supabase.auth.signOut();
+                  } catch (e) {}
                   navigate({ to: "/" });
                 }}>
                   <LogOut className="w-4 h-4 mr-2" /> Sign out
