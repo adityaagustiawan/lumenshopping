@@ -3,6 +3,7 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { ArrowRight, Sparkles, Zap, ShoppingBag, MessageSquare } from "lucide-react";
 import { getHomeData } from "@/lib/products.functions";
 import { ProductCard } from "@/components/ProductCard";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 const homeQuery = queryOptions({ queryKey: ["home"], queryFn: () => getHomeData() });
 
@@ -30,7 +31,21 @@ function Home() {
             <Sparkles className="w-4 h-4" /> AI-powered shopping
           </span>
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl leading-[1.05] text-foreground">
-            A marketplace<br />that feels <em className="text-accent">personal</em>.
+            A marketplace<br />that feels{" "}
+            <TypingAnimation
+              phrases={[
+                "personal",
+                "effortless",
+                "intelligent",
+                "trustworthy",
+                "seamless",
+                "innovative"
+              ]}
+              typingSpeed={120}
+              deletingSpeed={60}
+              pauseDuration={2000}
+            />
+            .
           </h1>
           <p className="text-muted-foreground text-lg max-w-md">
             Discover products from trusted sellers across Indonesia. Let Lumen,

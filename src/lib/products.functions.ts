@@ -55,13 +55,13 @@ const mockCategories: Category[] = [
   { slug: 'books', name: 'Books', icon: '📚', sort_order: 6 },
 ];
 
-// Embedded SVG placeholders for products
-const svgPlaceholder1 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23e0f2fe' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%230284c7'%3E🎧%3C/text%3E%3C/svg%3E`;
-const svgPlaceholder2 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fdf4ff' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%239333ea'%3E👕%3C/text%3E%3C/svg%3E`;
-const svgPlaceholder3 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23d97706'%3E⌚%3C/text%3E%3C/svg%3E`;
-const svgPlaceholder4 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fce7f3' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23be185d'%3E✨%3C/text%3E%3C/svg%3E`;
-const svgPlaceholder5 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f0fdf4' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%2316a34a'%3E🧘%3C/text%3E%3C/svg%3E`;
-const svgPlaceholder6 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23b45309'%3E💡%3C/text%3E%3C/svg%3E`;
+// Real product images from Unsplash
+const productImage1 = "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80"; // Wireless earbuds
+const productImage2 = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80"; // T-shirt
+const productImage3 = "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&q=80"; // Smart watch
+const productImage4 = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80"; // Face serum
+const productImage5 = "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&q=80"; // Yoga mat
+const productImage6 = "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80"; // Floor lamp
 
 const mockProducts: Product[] = [
   {
@@ -69,9 +69,9 @@ const mockProducts: Product[] = [
     slug: 'wireless-bluetooth-earbuds-pro',
     name: 'Wireless Bluetooth Earbuds Pro',
     description: 'High-quality wireless earbuds with active noise cancellation, 30-hour battery life, and premium sound quality.',
-    price_cents: 799000,
-    compare_at_cents: 999000,
-    image_url: svgPlaceholder1,
+    price_cents: 7900,
+    compare_at_cents: 9900,
+    image_url: productImage1,
     category_slug: 'electronics',
     rating: 4.8,
     sold_count: 154,
@@ -88,9 +88,9 @@ const mockProducts: Product[] = [
     slug: 'minimalist-cotton-tshirt',
     name: 'Minimalist Cotton T-Shirt',
     description: 'Super soft cotton t-shirt with a modern fit and minimalist design.',
-    price_cents: 199000,
-    compare_at_cents: 299000,
-    image_url: svgPlaceholder2,
+    price_cents: 2900,
+    compare_at_cents: 3900,
+    image_url: productImage2,
     category_slug: 'fashion',
     rating: 4.6,
     sold_count: 289,
@@ -103,9 +103,9 @@ const mockProducts: Product[] = [
     slug: 'smart-watch-series-5',
     name: 'Smart Watch Series 5',
     description: 'Advanced smartwatch with heart rate monitor, GPS, and 14-day battery life.',
-    price_cents: 2499000,
+    price_cents: 24900,
     compare_at_cents: null,
-    image_url: svgPlaceholder3,
+    image_url: productImage3,
     category_slug: 'electronics',
     rating: 4.9,
     sold_count: 87,
@@ -118,9 +118,9 @@ const mockProducts: Product[] = [
     slug: 'organic-face-serum',
     name: 'Organic Vitamin C Face Serum',
     description: '100% organic face serum for glowing, healthy skin.',
-    price_cents: 349000,
-    compare_at_cents: 499000,
-    image_url: svgPlaceholder4,
+    price_cents: 3900,
+    compare_at_cents: 4900,
+    image_url: productImage4,
     category_slug: 'beauty',
     rating: 4.7,
     sold_count: 423,
@@ -133,9 +133,9 @@ const mockProducts: Product[] = [
     slug: 'yoga-mat-premium',
     name: 'Premium Yoga Mat',
     description: 'Extra thick non-slip yoga mat perfect for all types of exercise.',
-    price_cents: 599000,
+    price_cents: 5900,
     compare_at_cents: null,
-    image_url: svgPlaceholder5,
+    image_url: productImage5,
     category_slug: 'sports',
     rating: 4.5,
     sold_count: 156,
@@ -148,9 +148,9 @@ const mockProducts: Product[] = [
     slug: 'modern-floor-lamp',
     name: 'Modern LED Floor Lamp',
     description: 'Elegant modern floor lamp with adjustable brightness and color temperature.',
-    price_cents: 1299000,
-    compare_at_cents: 1699000,
-    image_url: svgPlaceholder6,
+    price_cents: 12900,
+    compare_at_cents: 16900,
+    image_url: productImage6,
     category_slug: 'home',
     rating: 4.8,
     sold_count: 98,
