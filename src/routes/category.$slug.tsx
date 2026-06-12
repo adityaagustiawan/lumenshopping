@@ -31,6 +31,26 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+// SVG placeholders
+const svgThumbnail1 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23e0f2fe' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%230284c7'%3E📱%3C/text%3E%3C/svg%3E";
+const svgThumbnail2 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fdf4ff' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%239333ea'%3E🎧%3C/text%3E%3C/svg%3E";
+const svgThumbnail3 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23d97706'%3E💻%3C/text%3E%3C/svg%3E";
+const svgThumbnail4 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fce7f3' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23be185d'%3E🎮%3C/text%3E%3C/svg%3E";
+const svgThumbnail5 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f0fdf4' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%2316a34a'%3E⌚%3C/text%3E%3C/svg%3E";
+const svgThumbnail6 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef9c3' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23a16207'%3E🎥%3C/text%3E%3C/svg%3E";
+const svgThumbnail7 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23e0e7ff' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%234f46e5'%3E🖱️%3C/text%3E%3C/svg%3E";
+const svgThumbnail8 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23d9f99d' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%234ade80'%3E🔌%3C/text%3E%3C/svg%3E";
+const svgThumbnail9 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fbcfe8' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23f472b6'%3E🔋%3C/text%3E%3C/svg%3E";
+const svgThumbnail10 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fed7aa' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23ea580c'%3E⌨️%3C/text%3E%3C/svg%3E";
+const svgThumbnail11 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23ddd6fe' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%237c3aed'%3E📷%3C/text%3E%3C/svg%3E";
+const svgThumbnail12 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%2399f6e4' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%230d9488'%3E🏠%3C/text%3E%3C/svg%3E";
+const svgThumbnail13 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23a16207'%3E👟%3C/text%3E%3C/svg%3E";
+const svgThumbnail14 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fce7f3' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23be185d'%3E👕%3C/text%3E%3C/svg%3E";
+const svgThumbnail15 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f0fdf4' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%2316a34a'%3E🪑%3C/text%3E%3C/svg%3E";
+const svgThumbnail16 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23a16207'%3E💄%3C/text%3E%3C/svg%3E";
+const svgThumbnail17 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23dbeafe' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%233b82f6'%3E🏋️%3C/text%3E%3C/svg%3E";
+const svgThumbnail18 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23fef3c7' width='400' height='400'/%3E%3Ctext x='200' y='210' text-anchor='middle' font-size='64' fill='%23a16207'%3E📚%3C/text%3E%3C/svg%3E";
+
 // Electronics subcategories
 const electronicsSubcategories = [
   { id: "smartphones", name: "Smartphones & Tablets", icon: "📱" },
@@ -48,7 +68,7 @@ const productVideos = [
   {
     id: "v1",
     title: "iPhone 15 Pro Max Unboxing",
-    thumbnail: "https://images.unsplash.com/photo-1592750470538-787ea4e2e1b8?w=400&q=80",
+    thumbnail: svgThumbnail1,
     duration: "0:45",
     views: "125K",
     productSlug: "apple-iphone-15-pro",
@@ -56,7 +76,7 @@ const productVideos = [
   {
     id: "v2",
     title: "Sony WH-1000XM5 Review",
-    thumbnail: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+    thumbnail: svgThumbnail2,
     duration: "1:20",
     views: "89K",
     productSlug: "sony-wh1000xm5",
@@ -64,7 +84,7 @@ const productVideos = [
   {
     id: "v3",
     title: "MacBook Air M2 Performance Test",
-    thumbnail: "https://images.unsplash.com/photo-1517336714731-4896decb346d?w=400&q=80",
+    thumbnail: svgThumbnail3,
     duration: "2:15",
     views: "203K",
     productSlug: "macbook-air-m2",
@@ -72,7 +92,7 @@ const productVideos = [
   {
     id: "v4",
     title: "AirPods Pro 2 Sound Test",
-    thumbnail: "https://images.unsplash.com/photo-1600267214827-459246976967?w=400&q=80",
+    thumbnail: svgThumbnail4,
     duration: "1:05",
     views: "156K",
     productSlug: "airpods-pro-2",
@@ -89,7 +109,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Industry-leading noise cancellation with exceptional sound quality.",
       price_cents: 599900,
       compare_at_cents: 749900,
-      image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+      image_url: svgThumbnail2,
       category_slug: "electronics",
       rating: 4.9,
       sold_count: 1254,
@@ -107,7 +127,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "The latest iPhone with titanium design and A17 Pro chip.",
       price_cents: 2199900,
       compare_at_cents: 2499900,
-      image_url: "https://images.unsplash.com/photo-1592750470538-787ea4e2e1b8?w=400&q=80",
+      image_url: svgThumbnail1,
       category_slug: "electronics",
       rating: 4.8,
       sold_count: 2341,
@@ -125,7 +145,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Smartwatch with rotating bezel and advanced health tracking.",
       price_cents: 449900,
       compare_at_cents: 549900,
-      image_url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&q=80",
+      image_url: svgThumbnail5,
       category_slug: "electronics",
       rating: 4.7,
       sold_count: 876,
@@ -143,7 +163,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Thin and light laptop with powerful M2 chip.",
       price_cents: 1349900,
       compare_at_cents: 1599900,
-      image_url: "https://images.unsplash.com/photo-1517336714731-4896decb346d?w=400&q=80",
+      image_url: svgThumbnail3,
       category_slug: "electronics",
       rating: 4.9,
       sold_count: 567,
@@ -161,7 +181,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Wireless earbuds with MagSafe and Transparency mode.",
       price_cents: 329900,
       compare_at_cents: 399900,
-      image_url: "https://images.unsplash.com/photo-1600267214827-459246976967?w=400&q=80",
+      image_url: svgThumbnail4,
       category_slug: "electronics",
       rating: 4.8,
       sold_count: 1893,
@@ -179,7 +199,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Next-gen gaming console with stunning graphics.",
       price_cents: 849900,
       compare_at_cents: 999900,
-      image_url: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80",
+      image_url: svgThumbnail6,
       category_slug: "electronics",
       rating: 4.9,
       sold_count: 201,
@@ -197,7 +217,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Ergonomic wireless mouse with 8K DPI and quiet clicks. Perfect for productivity.",
       price_cents: 139900,
       compare_at_cents: 169900,
-      image_url: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80",
+      image_url: svgThumbnail7,
       category_slug: "electronics",
       rating: 4.8,
       sold_count: 1456,
@@ -215,7 +235,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "High-capacity portable charger with 3 USB ports for multiple devices.",
       price_cents: 89900,
       compare_at_cents: 119900,
-      image_url: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&q=80",
+      image_url: svgThumbnail8,
       category_slug: "electronics",
       rating: 4.7,
       sold_count: 3421,
@@ -233,7 +253,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Wireless earbuds with ANC, Bluetooth 5.3, and dual device connection.",
       price_cents: 109900,
       compare_at_cents: 149900,
-      image_url: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80",
+      image_url: svgThumbnail9,
       category_slug: "electronics",
       rating: 4.5,
       sold_count: 2134,
@@ -251,7 +271,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "High-speed charging cable with 100W power delivery, 2m length.",
       price_cents: 24900,
       compare_at_cents: 39900,
-      image_url: "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=400&q=80",
+      image_url: svgThumbnail10,
       category_slug: "electronics",
       rating: 4.6,
       sold_count: 5678,
@@ -269,7 +289,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Hot-swappable mechanical keyboard with RGB backlight and wireless connectivity.",
       price_cents: 149900,
       compare_at_cents: 189900,
-      image_url: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&q=80",
+      image_url: svgThumbnail11,
       category_slug: "electronics",
       rating: 4.8,
       sold_count: 876,
@@ -287,7 +307,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Dual-band WiFi 6 router with 5400 Mbps speed and OneMesh support.",
       price_cents: 179900,
       compare_at_cents: 229900,
-      image_url: "https://images.unsplash.com/photo-1606904825846-647eb07f5be2?w=400&q=80",
+      image_url: svgThumbnail12,
       category_slug: "electronics",
       rating: 4.7,
       sold_count: 654,
@@ -305,7 +325,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Rugged external SSD with 1050MB/s read speed and IP55 water resistance.",
       price_cents: 169900,
       compare_at_cents: 219900,
-      image_url: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&q=80",
+      image_url: svgThumbnail13,
       category_slug: "electronics",
       rating: 4.9,
       sold_count: 1234,
@@ -323,7 +343,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Premium noise-cancelling headphones with 24-hour battery life.",
       price_cents: 449900,
       compare_at_cents: 549900,
-      image_url: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&q=80",
+      image_url: svgThumbnail2,
       category_slug: "electronics",
       rating: 4.8,
       sold_count: 987,
@@ -341,7 +361,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Waterproof 5.3K60 action camera with HyperSmooth 6.0 stabilization.",
       price_cents: 649900,
       compare_at_cents: 799900,
-      image_url: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=400&q=80",
+      image_url: svgThumbnail6,
       category_slug: "electronics",
       rating: 4.7,
       sold_count: 543,
@@ -359,7 +379,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Smart doorbell with 1536p HD video, 3D motion detection, and Alexa integration.",
       price_cents: 349900,
       compare_at_cents: 429900,
-      image_url: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&q=80",
+      image_url: svgThumbnail12,
       category_slug: "electronics",
       rating: 4.6,
       sold_count: 1876,
@@ -379,7 +399,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Classic sneaker that never goes out of style.",
       price_cents: 219900,
       compare_at_cents: 289900,
-      image_url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80",
+      image_url: svgThumbnail13,
       category_slug: "fashion",
       rating: 4.8,
       sold_count: 1543,
@@ -397,7 +417,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Comfortable 100% organic cotton tee in multiple colors.",
       price_cents: 8990,
       compare_at_cents: 12990,
-      image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80",
+      image_url: svgThumbnail14,
       category_slug: "fashion",
       rating: 4.5,
       sold_count: 3421,
@@ -417,7 +437,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Comfortable chair with lumbar support for long work days.",
       price_cents: 249900,
       compare_at_cents: 349900,
-      image_url: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0a1?w=400&q=80",
+      image_url: svgThumbnail15,
       category_slug: "home",
       rating: 4.7,
       sold_count: 765,
@@ -434,7 +454,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Healthy cooking with little to no oil.",
       price_cents: 149900,
       compare_at_cents: 199900,
-      image_url: "https://images.unsplash.com/photo-1585044602846-68f4a1e7a45c?w=400&q=80",
+      image_url: svgThumbnail16,
       category_slug: "home",
       rating: 4.6,
       sold_count: 987,
@@ -455,7 +475,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Complete 5-step routine for glowing skin.",
       price_cents: 22490,
       compare_at_cents: 29990,
-      image_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80",
+      image_url: svgThumbnail16,
       category_slug: "beauty",
       rating: 4.9,
       sold_count: 2134,
@@ -476,7 +496,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Space-saving solution for home workouts.",
       price_cents: 17490,
       compare_at_cents: 22490,
-      image_url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80",
+      image_url: svgThumbnail17,
       category_slug: "sports",
       rating: 4.7,
       sold_count: 876,
@@ -496,7 +516,7 @@ const sampleProducts: Record<string, Product[]> = {
       description: "Must-read books for book lovers.",
       price_cents: 4490,
       compare_at_cents: 5990,
-      image_url: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&q=80",
+      image_url: svgThumbnail18,
       category_slug: "books",
       rating: 4.5,
       sold_count: 1567,

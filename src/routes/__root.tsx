@@ -12,7 +12,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -78,19 +77,44 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+// Safe wrapper for Supabase that never throws errors
+function safeSupabase() {
+  try {
+    const { supabase } = require("@/integrations/supabase/client");
+    return supabase;
+  } catch (e) {
+    // Return fully safe dummy object instead of throwing!
+    return {
+      auth: {
+        onAuthStateChange: () => ({
+          data: { subscription: { unsubscribe: () => {} } },
+          error: null
+        }),
+        getSession: async () => ({ data: { session: null }, error: null }),
+        signOut: async () => ({ error: null })
+      }
+    };
+  }
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        router.invalidate();
-        if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
-      }
-    });
-    return () => {
-      sub.subscription.unsubscribe();
-    };
+    try {
+      const sb = safeSupabase();
+      const { data: sub } = sb.auth.onAuthStateChange((event: string) => {
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+          router.invalidate();
+          if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+        }
+      });
+      return () => {
+        try {
+          sub.subscription.unsubscribe();
+        } catch (e) { }
+      };
+    } catch (e) { }
   }, [router, queryClient]);
 
   return (

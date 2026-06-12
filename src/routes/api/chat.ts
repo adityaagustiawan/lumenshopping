@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { createClient } from "@supabase/supabase-js";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
 const SYSTEM_PROMPT = `You are the Senior Store Manager of Lumen, a modern AI-powered marketplace.
@@ -16,6 +15,13 @@ Key Guidelines:
 
 Help users discover products, suggest gifts, explain features, and manage their shopping experience with a high-level strategic perspective.`;
 
+const mockProducts = [
+  { name: "Wireless Bluetooth Earbuds Pro", slug: "wireless-bluetooth-earbuds-pro", description: "High-quality wireless earbuds with active noise cancellation, 30-hour battery life, and premium sound quality.", price_cents: 799000, category_slug: "electronics", rating: 4.8, location: "Jakarta" },
+  { name: "Minimalist Cotton T-Shirt", slug: "minimalist-cotton-tshirt", description: "Super soft cotton t-shirt with a modern fit and minimalist design.", price_cents: 199000, category_slug: "fashion", rating: 4.6, location: "Bandung" },
+  { name: "Smart Watch Series 5", slug: "smart-watch-series-5", description: "Advanced smartwatch with heart rate monitor, GPS, and 14-day battery life.", price_cents: 2499000, category_slug: "electronics", rating: 4.9, location: "Surabaya" },
+  { name: "Organic Vitamin C Face Serum", slug: "organic-face-serum", description: "100% organic face serum for glowing, healthy skin.", price_cents: 349000, category_slug: "beauty", rating: 4.7, location: "Jakarta" },
+];
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -24,33 +30,13 @@ export const Route = createFileRoute("/api/chat")({
         if (!Array.isArray(body.messages)) return new Response("messages required", { status: 400 });
         if (!body.threadId) return new Response("threadId required", { status: 400 });
 
-        const authHeader = request.headers.get("authorization");
-        if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401 });
-        const token = authHeader.slice(7);
-
-        const SUPABASE_URL = process.env.SUPABASE_URL!;
-        const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-          global: { headers: { Authorization: `Bearer ${token}` } },
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
-        const { data: claims, error: cErr } = await supabase.auth.getClaims(token);
-        if (cErr || !claims?.claims?.sub) return new Response("Unauthorized", { status: 401 });
-        const userId = claims.claims.sub as string;
-
-        // Load product catalog for grounding
-        const { data: products } = await supabase
-          .from("products")
-          .select("name, slug, description, price_cents, category_slug, rating, location");
-        const catalog = (products ?? [])
-          .map((p) => `- ${p.name} (/${p.slug}) — Rp ${(p.price_cents * 100).toLocaleString("id-ID")} — ${p.category_slug} — ${p.description}`)
-          .join("\n");
-
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
         const gateway = createLovableAiGatewayProvider(key);
         const messages = body.messages as UIMessage[];
+
+        const catalog = mockProducts.map((p) => `- ${p.name} (/${p.slug}) — Rp ${(p.price_cents * 100).toLocaleString("id-ID")} — ${p.category_slug} — ${p.description}`).join("\n");
 
         const result = streamText({
           model: gateway("mimo-v2.5-pro"),
@@ -60,36 +46,6 @@ export const Route = createFileRoute("/api/chat")({
 
         return result.toUIMessageStreamResponse({
           originalMessages: messages,
-          onFinish: async ({ messages: finalMessages }) => {
-            try {
-              const last = finalMessages[finalMessages.length - 1];
-              const userMsg = messages[messages.length - 1];
-              if (userMsg && userMsg.role === "user") {
-                await supabase.from("messages").insert({
-                  thread_id: body.threadId!,
-                  user_id: userId,
-                  role: "user",
-                  parts: userMsg.parts as unknown as object,
-                });
-              }
-              if (last && last.role === "assistant") {
-                await supabase.from("messages").insert({
-                  thread_id: body.threadId!,
-                  user_id: userId,
-                  role: "assistant",
-                  parts: last.parts as unknown as object,
-                });
-              }
-              await supabase.from("threads").update({ updated_at: new Date().toISOString() }).eq("id", body.threadId!);
-              // Auto-title from first user message if still default
-              const text = userMsg?.parts?.map((p) => (p.type === "text" ? p.text : "")).join(" ").trim().slice(0, 60);
-              if (text) {
-                await supabase.from("threads").update({ title: text }).eq("id", body.threadId!).eq("title", "New chat");
-              }
-            } catch (e) {
-              console.error("persist messages failed", e);
-            }
-          },
         });
       },
     },

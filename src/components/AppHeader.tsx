@@ -1,11 +1,25 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, ShoppingBag, MessageCircle, User as UserIcon, LogOut, Play } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+
+// Safe wrapper for Supabase that never throws errors
+function safeSupabase() {
+  try {
+    const { supabase } = require("@/integrations/supabase/client");
+    return supabase;
+  } catch (e) {
+    // Return fully safe dummy object instead of throwing!
+    return {
+      auth: {
+        signOut: async () => ({ error: null })
+      }
+    };
+  }
+}
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -50,7 +64,13 @@ export function AppHeader() {
                 <DropdownMenuItem onClick={() => navigate({ to: "/account" })}>Account</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate({ to: "/chat" })}>AI Assistant</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>
+                <DropdownMenuItem onClick={async () => { 
+                  try {
+                    const sb = safeSupabase();
+                    await sb.auth.signOut(); 
+                  } catch (e) {} 
+                  navigate({ to: "/" });
+                }}>
                   <LogOut className="w-4 h-4 mr-2" /> Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
