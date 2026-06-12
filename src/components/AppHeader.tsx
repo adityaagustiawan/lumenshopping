@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import logoImage from "/lumen-logo.png";
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -15,8 +16,21 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center gap-4">
-        <Link to="/" className="font-display text-2xl text-foreground shrink-0">
-          lumen<span className="text-accent">.</span>
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <img
+            src={logoImage}
+            alt="Lumen Logo"
+            className="h-8 w-auto"
+            onError={(e) => {
+              // Fallback to text if image fails to load
+              e.currentTarget.style.display = 'none';
+              const fallback = e.currentTarget.nextElementSibling;
+              if (fallback) fallback.classList.remove('hidden');
+            }}
+          />
+          <span className="font-display text-2xl text-foreground hidden">
+            lumen<span className="text-accent">.</span>
+          </span>
         </Link>
         <form
           className="flex-1 max-w-xl relative hidden sm:block"

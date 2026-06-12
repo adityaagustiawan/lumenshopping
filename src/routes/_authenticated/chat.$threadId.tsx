@@ -6,9 +6,16 @@ import { listThreads, createThread, deleteThread } from "@/lib/threads.functions
 import { Button } from "@/components/ui/button";
 import { processMultimodalInput } from "@/lib/multimodal/multimodal-handler";
 import { processProductQuery, detectIntent } from "@/lib/smart-product-matcher";
+import logoImage from "/lumen-logo.png";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
+  head: () => ({
+    meta: [
+      { title: "Lumen AI Assistant - Chat" },
+      { name: "description", content: "Chat with Lumen AI Assistant" },
+    ],
+  }),
 });
 
 type Message = {
@@ -356,7 +363,7 @@ function ChatPage() {
           <Plus className="w-4 h-4 mr-1" /> New chat
         </Button>
         <div className="flex-1 overflow-y-auto space-y-1">
-          {threadsQ.data?.threads.map((t) => (
+          {threadsQ.data?.threads.map((t: any) => (
             <div key={t.id} className={`group flex items-center gap-1 rounded-lg pr-1 ${t.id === threadId ? "bg-secondary" : "hover:bg-secondary/60"}`}>
               <Link
                 to="/chat/$threadId" params={{ threadId: t.id }}
@@ -388,7 +395,7 @@ function ChatPage() {
       <section className="flex flex-col bg-card border border-border/60 rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-border">
           <h2 className="font-display text-xl flex items-center gap-2">
-            <img src="/lumen-logo.png" alt="Lumen" className="w-8 h-8 object-contain" />
+            <img src={logoImage} alt="Lumen" className="w-8 h-8 object-contain" />
             Lumen AI Assistant
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -406,7 +413,7 @@ function ChatPage() {
           {messages.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <div className="inline-flex w-20 h-20 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 items-center justify-center p-3">
-                <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
+                <img src={logoImage} alt="Lumen AI" className="w-full h-full object-contain" />
               </div>
               <h3 className="font-display text-2xl">Hi, I'm Lumen AI</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
@@ -434,7 +441,7 @@ function ChatPage() {
               <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 {m.role === "assistant" && (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center shrink-0 p-1.5">
-                    <img src="/lumen-logo.png" alt="Lumen" className="w-full h-full object-contain" />
+                    <img src={logoImage} alt="Lumen" className="w-full h-full object-contain" />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap transform transition-all hover:scale-[1.02] ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
@@ -448,7 +455,7 @@ function ChatPage() {
           {isTyping && (
             <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center p-1.5">
-                <img src="/lumen-logo.png" alt="Lumen" className="w-full h-full object-contain animate-pulse" />
+                <img src={logoImage} alt="Lumen" className="w-full h-full object-contain animate-pulse" />
               </div>
               <div className="bg-secondary rounded-2xl px-4 py-3 flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" />
