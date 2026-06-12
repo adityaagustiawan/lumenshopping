@@ -6,7 +6,63 @@ import { listThreads, createThread, deleteThread } from "@/lib/threads.functions
 import { Button } from "@/components/ui/button";
 import { processMultimodalInput } from "@/lib/multimodal/multimodal-handler";
 import { processProductQuery, detectIntent } from "@/lib/smart-product-matcher";
-import logoImage from "/lumen-logo.png";
+
+// SVG logo for Lumen (elegant design - small version for chat header)
+const LumenLogo = () => (
+  <svg viewBox="0 0 200 80" className="w-12 h-12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Golden L with star */}
+    <path d="M40 15 L40 55 L80 55 Q75 30 65 20 Q55 10 40 15 Z" fill="url(#goldGrad)"/>
+    <path d="M50 25 L50 50 L70 50 Q67 35 62 30 Q57 25 50 25 Z" fill="url(#goldDark)"/>
+    
+    {/* Star */}
+    <g transform="translate(85, 30)">
+      <polygon points="0,-10 1.5,-3 8.5,-3 2.5,1.5 4,8.5 0,4.5 -4,8.5 -2.5,1.5 -8.5,-3 -1.5,-3" fill="url(#goldGrad)"/>
+    </g>
+    
+    {/* Text */}
+    <text x="30" y="72" fontFamily="'Georgia', serif" fontSize="22" fontWeight="bold" letterSpacing="4" fill="#1e3a5f">
+      LUMEN
+    </text>
+    
+    <defs>
+      <linearGradient id="goldGrad" x1="40" y1="15" x2="80" y2="55">
+        <stop offset="0%" stopColor="#f0e68c"/>
+        <stop offset="50%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#c9a96e"/>
+      </linearGradient>
+      <linearGradient id="goldDark" x1="50" y1="25" x2="70" y2="50">
+        <stop offset="0%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#a8893d"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+// Small SVG icon for chat messages (L only with star)
+const LumenIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Golden L */}
+    <path d="M20 20 L20 65 L65 65 Q60 40 50 30 Q40 20 20 20 Z" fill="url(#goldGradIcon)"/>
+    <path d="M30 30 L30 58 L55 58 Q52 45 47 40 Q42 35 30 30 Z" fill="url(#goldDarkIcon)"/>
+    
+    {/* Star */}
+    <g transform="translate(70, 35)">
+      <polygon points="0,-12 2,-4 10,-4 3,2 5,10 0,5 -5,10 -3,2 -10,-4 -2,-4" fill="url(#goldGradIcon)"/>
+    </g>
+    
+    <defs>
+      <linearGradient id="goldGradIcon" x1="20" y1="20" x2="65" y2="65">
+        <stop offset="0%" stopColor="#f0e68c"/>
+        <stop offset="50%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#c9a96e"/>
+      </linearGradient>
+      <linearGradient id="goldDarkIcon" x1="30" y1="30" x2="55" y2="58">
+        <stop offset="0%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#a8893d"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
@@ -395,7 +451,7 @@ function ChatPage() {
       <section className="flex flex-col bg-card border border-border/60 rounded-2xl overflow-hidden">
         <div className="p-4 border-b border-border">
           <h2 className="font-display text-xl flex items-center gap-2">
-            <img src={logoImage} alt="Lumen" className="w-8 h-8 object-contain" />
+            <LumenLogo />
             Lumen AI Assistant
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -413,7 +469,7 @@ function ChatPage() {
           {messages.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <div className="inline-flex w-20 h-20 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 items-center justify-center p-3">
-                <img src={logoImage} alt="Lumen AI" className="w-full h-full object-contain" />
+                <LumenIcon />
               </div>
               <h3 className="font-display text-2xl">Hi, I'm Lumen AI</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
@@ -441,7 +497,7 @@ function ChatPage() {
               <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 {m.role === "assistant" && (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center shrink-0 p-1.5">
-                    <img src={logoImage} alt="Lumen" className="w-full h-full object-contain" />
+                    <LumenIcon />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap transform transition-all hover:scale-[1.02] ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
@@ -455,7 +511,7 @@ function ChatPage() {
           {isTyping && (
             <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center p-1.5">
-                <img src={logoImage} alt="Lumen" className="w-full h-full object-contain animate-pulse" />
+                <LumenIcon />
               </div>
               <div className="bg-secondary rounded-2xl px-4 py-3 flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" />

@@ -6,7 +6,44 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoImage from "/lumen-logo.png";
+
+// SVG logo for Lumen (elegant design)
+const LumenLogo = () => (
+  <svg viewBox="0 0 200 80" className="h-8 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Golden L with star */}
+    <path d="M40 15 L40 55 L80 55 Q75 30 65 20 Q55 10 40 15 Z" fill="url(#goldGrad)"/>
+    <path d="M50 25 L50 50 L70 50 Q67 35 62 30 Q57 25 50 25 Z" fill="url(#goldDark)"/>
+    
+    {/* Star */}
+    <g transform="translate(85, 30)">
+      <polygon points="0,-10 1.5,-3 8.5,-3 2.5,1.5 4,8.5 0,4.5 -4,8.5 -2.5,1.5 -8.5,-3 -1.5,-3" fill="url(#goldGrad)"/>
+    </g>
+    
+    {/* Text */}
+    <text x="30" y="72" fontFamily="'Georgia', serif" fontSize="22" fontWeight="bold" letterSpacing="4" fill="#1e3a5f">
+      LUMEN
+    </text>
+    
+    {/* Subtitle line */}
+    <line x1="40" y1="78" x2="75" y2="78" stroke="#c9a96e" strokeWidth="1.5"/>
+    <line x1="125" y1="78" x2="160" y2="78" stroke="#c9a96e" strokeWidth="1.5"/>
+    <text x="80" y="78.5" fontFamily="system-ui" fontSize="8" letterSpacing="2" fill="#8b7355" textAnchor="middle">
+      MODERN MARKETPLACE
+    </text>
+    
+    <defs>
+      <linearGradient id="goldGrad" x1="40" y1="15" x2="80" y2="55">
+        <stop offset="0%" stopColor="#f0e68c"/>
+        <stop offset="50%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#c9a96e"/>
+      </linearGradient>
+      <linearGradient id="goldDark" x1="50" y1="25" x2="70" y2="50">
+        <stop offset="0%" stopColor="#d4af37"/>
+        <stop offset="100%" stopColor="#a8893d"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 export function AppHeader() {
   const { user } = useAuth();
@@ -17,17 +54,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2 shrink-0">
-          <img
-            src={logoImage}
-            alt="Lumen Logo"
-            className="h-8 w-auto"
-            onError={(e) => {
-              // Fallback to text if image fails to load
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling;
-              if (fallback) fallback.classList.remove('hidden');
-            }}
-          />
+          <LumenLogo />
           <span className="font-display text-2xl text-foreground hidden">
             lumen<span className="text-accent">.</span>
           </span>
