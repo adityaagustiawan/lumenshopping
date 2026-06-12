@@ -93,16 +93,21 @@ function AuthPage() {
           <h1 className="font-display text-3xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
           <p className="text-sm text-muted-foreground">Shop and chat with your AI assistant.</p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 relative z-10">
           <Button
-          onClick={() => signInWithProvider('google')}
-          variant="outline"
-          disabled={socialLoading !== null}
-          className="w-full rounded-full h-11"
-        >
-          <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11v3.2h5.3c-.2 1.4-1.6 4-5.3 4-3.2 0-5.8-2.7-5.8-5.9s2.6-5.9 5.8-5.9c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.7 3.9 14.6 3 12 3 6.9 3 2.8 7.1 2.8 12.2S6.9 21.4 12 21.4c6.9 0 11.5-4.9 11.5-11.7 0-.8-.1-1.4-.2-2H12z"/></svg>
-          {socialLoading === 'google' ? 'Connecting...' : 'Continue with Google'}
-        </Button>
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              console.log('Google button clicked');
+              signInWithProvider('google');
+            }}
+            variant="outline"
+            disabled={socialLoading !== null}
+            className="w-full rounded-full h-11 cursor-pointer hover:bg-accent/10 transition-colors"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11v3.2h5.3c-.2 1.4-1.6 4-5.3 4-3.2 0-5.8-2.7-5.8-5.9s2.6-5.9 5.8-5.9c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.7 3.9 14.6 3 12 3 6.9 3 2.8 7.1 2.8 12.2S6.9 21.4 12 21.4c6.9 0 11.5-4.9 11.5-11.7 0-.8-.1-1.4-.2-2H12z"/></svg>
+            {socialLoading === 'google' ? 'Connecting...' : 'Continue with Google'}
+          </Button>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <div className="flex-1 h-px bg-border" /> or <div className="flex-1 h-px bg-border" />
