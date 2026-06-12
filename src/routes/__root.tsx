@@ -77,33 +77,15 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-// Safe wrapper for Supabase that never throws errors
-function safeSupabase() {
-  try {
-    const { supabase } = require("@/integrations/supabase/client");
-    return supabase;
-  } catch (e) {
-    // Return fully safe dummy object instead of throwing!
-    return {
-      auth: {
-        onAuthStateChange: () => ({
-          data: { subscription: { unsubscribe: () => {} } },
-          error: null
-        }),
-        getSession: async () => ({ data: { session: null }, error: null }),
-        signOut: async () => ({ error: null })
-      }
-    };
-  }
-}
+// Import supabase at the top level
+import { supabase } from "@/integrations/supabase/client";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
     try {
-      const sb = safeSupabase();
-      const { data: sub } = sb.auth.onAuthStateChange((event: string) => {
+      const { data: sub } = supabase.auth.onAuthStateChange((event: string) => {
         if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
           router.invalidate();
           if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
