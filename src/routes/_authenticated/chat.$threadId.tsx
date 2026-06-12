@@ -5,6 +5,7 @@ import { Plus, Trash2, Send, Sparkles, Image, Mic, Paperclip } from "lucide-reac
 import { listThreads, createThread, deleteThread } from "@/lib/threads.functions";
 import { Button } from "@/components/ui/button";
 import { processMultimodalInput } from "@/lib/multimodal/multimodal-handler";
+import { processProductQuery, detectIntent } from "@/lib/smart-product-matcher";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
@@ -44,7 +45,7 @@ function ChatPage() {
     inputRef.current?.focus();
   }, []);
 
-  // Coze API Integration - Updated based on Coze docs
+  // Smart AI with Product Recommendations
   const sendMessageToCoze = async (text: string) => {
     setIsTyping(true);
     setError(null);
@@ -59,6 +60,26 @@ function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
+      // First, check if this is a product-related query
+      const intent = detectIntent(text);
+      
+      if (intent.type === 'product_search' || intent.type === 'price_inquiry' || intent.type === 'comparison') {
+        // Use smart product matcher for e-commerce queries
+        console.log("Using Smart Product Matcher for query:", text);
+        const productResponse = processProductQuery(text);
+        
+        const aiMessage: Message = {
+          id: Date.now().toString() + "-ai",
+          role: "assistant",
+          content: productResponse,
+          timestamp: new Date(),
+        };
+        
+        setMessages((prev) => [...prev, aiMessage]);
+        return;
+      }
+      
+      // For general queries, use Coze API
       console.log("Calling Coze API with query:", text);
       
       const response = await fetch(
@@ -384,20 +405,20 @@ function ChatPage() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-5">
           {messages.length === 0 ? (
             <div className="text-center py-16 space-y-3">
-              <div className="inline-flex w-16 h-16 rounded-full bg-accent/15 items-center justify-center p-2">
-                <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
+              <div className="inline-flex w-16 h-16 rounded-full bg-accent/15 items-center justify-center p-3">
+                <Sparkles className="w-full h-full text-accent" />
               </div>
               <h3 className="font-display text-2xl">Hi, I'm Lumen AI</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                I'm here to help with your marketplace needs! Ask me about products, recommendations, or anything else.
+                I'm your smart shopping assistant! I can help you find products with direct links to buy them.
               </p>
               <div className="flex flex-wrap justify-center gap-2 pt-2">
-                {["Recommend products for me", "How do I start selling?", "Show me trending items"].map((s) => (
-                  <button 
-                    key={s} 
+                {["Show me running shoes", "Find cheap laptops", "Best deals on headphones"].map((s) => (
+                  <button
+                    key={s}
                     onClick={() => {
                       setInput(s);
-                    }} 
+                    }}
                     className="text-xs px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/70 transition-colors"
                   >
                     {s}
@@ -405,15 +426,15 @@ function ChatPage() {
                 ))}
               </div>
               <div className="mt-6 text-xs text-muted-foreground">
-                <p>Check the browser console for debugging info!</p>
+                <p>💡 Try asking about specific products, categories, or deals!</p>
               </div>
             </div>
           ) : (
             messages.map((m) => (
               <div key={m.id} className={`flex gap-3 ${m.role === "user" ? "justify-end" : ""} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
                 {m.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0 p-1">
-                    <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
+                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0 p-2">
+                    <Sparkles className="w-full h-full text-accent" />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap transform transition-all hover:scale-[1.02] ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
@@ -426,8 +447,8 @@ function ChatPage() {
           {/* Typing indicator */}
           {isTyping && (
             <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center p-1">
-                <img src="/lumen-logo.png" alt="Lumen AI" className="w-full h-full object-contain" />
+              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center p-2">
+                <Sparkles className="w-full h-full text-accent animate-pulse" />
               </div>
               <div className="bg-secondary rounded-2xl px-4 py-3 flex gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" />
