@@ -6,12 +6,13 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppHeader } from "@/components/AppHeader";
 import { Toaster } from "@/components/ui/sonner";
+import IntroAnimation from "@/components/IntroAnimation";
 
 function NotFoundComponent() {
   return (
@@ -83,6 +84,7 @@ import { supabase } from "@/integrations/supabase/client";
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const [showIntro, setShowIntro] = useState(true);
   useEffect(() => {
     try {
       const { data: sub } = supabase.auth.onAuthStateChange((event: string) => {
@@ -98,6 +100,10 @@ function RootComponent() {
       };
     } catch (e) { }
   }, [router, queryClient]);
+
+  if (showIntro) {
+    return <IntroAnimation onComplete={() => setShowIntro(false)} />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
