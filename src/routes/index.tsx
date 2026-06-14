@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, Zap, ShoppingBag, MessageSquare } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, ShoppingBag, MessageSquare, Store, ZapOff, ShoppingCart, Star } from "lucide-react";
 import { getHomeData } from "@/lib/products.functions";
 import { ProductCard } from "@/components/ProductCard";
 import { TypingAnimation } from "@/components/TypingAnimation";
+import { Marquee } from "@/components/ui/marquee";
 
 const homeQuery = queryOptions({ queryKey: ["home"], queryFn: () => getHomeData() });
 
@@ -65,6 +66,27 @@ function Home() {
         <div className="absolute top-10 right-10 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-1/3 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
       </section>
+
+      {/* Marquee Section */}
+      <Marquee pauseOnHover={true} speed={40} className="mt-0">
+        <div className="flex items-center gap-8 mx-4">
+          {[ 
+            { text: "Shopee", icon: <ShoppingCart className="w-6 h-6" /> },
+            { text: "Tokopedia", icon: <Store className="w-6 h-6" /> },
+            { text: "Lazada", icon: <Zap className="w-6 h-6" /> },
+            { text: "Blibli", icon: <Store className="w-6 h-6" /> },
+            { text: "Bukalapak", icon: <ShoppingBag className="w-6 h-6" /> },
+            { text: "Amazon", icon: <ShoppingCart className="w-6 h-6" /> },
+            { text: "eBay", icon: <Store className="w-6 h-6" /> },
+            { text: "AliExpress", icon: <Zap className="w-6 h-6" /> },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-card border border-border/50 shadow-sm">
+              {item.icon}
+              <span className="text-lg font-semibold">{item.text}</span>
+            </div>
+          ))}
+        </div>
+      </Marquee>
 
       {/* Categories */}
       <section>
