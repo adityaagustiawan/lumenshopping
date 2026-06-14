@@ -71,17 +71,75 @@ function Home() {
       <Marquee pauseOnHover={true} speed={40} className="mt-0">
         <div className="flex items-center gap-8 mx-4">
           {[ 
-            { text: "Shopee", icon: <ShoppingCart className="w-6 h-6" /> },
-            { text: "Tokopedia", icon: <Store className="w-6 h-6" /> },
-            { text: "Lazada", icon: <Zap className="w-6 h-6" /> },
-            { text: "Blibli", icon: <Store className="w-6 h-6" /> },
-            { text: "Bukalapak", icon: <ShoppingBag className="w-6 h-6" /> },
-            { text: "Amazon", icon: <ShoppingCart className="w-6 h-6" /> },
-            { text: "eBay", icon: <Store className="w-6 h-6" /> },
-            { text: "AliExpress", icon: <Zap className="w-6 h-6" /> },
+            { 
+              text: "Shopee", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#EE4D2D" />
+                <path d="M24 12C17.373 12 12 17.373 12 24s5.373 12 12 12 12-5.373 12-12S30.627 12 24 12zm0 20c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z" fill="#fff" />
+                <path d="M18 24h12M24 18v12" stroke="#EE4D2D" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            },
+            { 
+              text: "Tokopedia", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#42B549" />
+                <path d="M24 14c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 16c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6z" fill="#fff" />
+                <path d="M24 20v8M20 24h8" stroke="#42B549" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            },
+            { 
+              text: "Lazada", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#0F146E" />
+                <path d="M14 24l3 8h6l3-8M21 16h6M18 28h12" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            },
+            { 
+              text: "Blibli", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#3D7DCA" />
+                <circle cx="24" cy="24" r="10" fill="#fff" />
+                <circle cx="24" cy="24" r="5" fill="#3D7DCA" />
+              </svg>
+            },
+            { 
+              text: "Bukalapak", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#FF0000" />
+                <path d="M24 14c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 14c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z" fill="#fff" />
+              </svg>
+            },
+            { 
+              text: "Amazon", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#232F3E" />
+                <path d="M12 28h24c2.209 0 4-1.791 4-4V20c0-2.209-1.791-4-4-4H12c-2.209 0-4 1.791-4 4v4c0 2.209 1.791 4 4 4z" fill="#fff" />
+                <path d="M14 22h20M18 26h12" stroke="#232F3E" strokeWidth="2" strokeLinecap="round" />
+                <path d="M24 32c-4.418 0-8-3.582-8-8h4c0 2.209 1.791 4 4 4s4-1.791 4-4h4c0 4.418-3.582 8-8 8z" fill="#FF9900" />
+              </svg>
+            },
+            { 
+              text: "eBay", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#fff" />
+                <text x="24" y="30" fontFamily="Arial Black, sans-serif" fontSize="14" fontWeight="bold" textAnchor="middle">
+                  <tspan fill="#E53238">e</tspan>
+                  <tspan fill="#0064D2">B</tspan>
+                  <tspan fill="#F5AF02">a</tspan>
+                  <tspan fill="#86B817">Y</tspan>
+                </text>
+              </svg>
+            },
+            { 
+              text: "AliExpress", 
+              logo: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#FF4747" />
+                <path d="M14 20h20M14 28h20M20 20v8" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            },
           ].map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-card border border-border/50 shadow-sm">
-              {item.icon}
+            <div key={idx} className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-card border border-border/50 shadow-sm">
+              {item.logo}
               <span className="text-lg font-semibold">{item.text}</span>
             </div>
           ))}
