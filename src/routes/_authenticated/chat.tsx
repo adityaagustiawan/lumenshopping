@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Send, Sparkles, Image, Mic, Paperclip } from "lucide-react";
@@ -64,7 +64,7 @@ const LumenIcon = () => (
   </svg>
 );
 
-export const Route = createFileRoute("/_authenticated/chat/$threadId")({
+export const Route = createFileRoute("/_authenticated/chat")({
   component: ChatPage,
   head: () => ({
     meta: [
@@ -83,11 +83,11 @@ type Message = {
 };
 
 function ChatPage() {
-  const { threadId } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
   const threadsQ = useQuery({ queryKey: ["threads"], queryFn: () => listThreads() });
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -97,6 +97,21 @@ function ChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isRecording, setIsRecording] = useState(false);
+
+  // Initialize with first thread or create new one
+  useEffect(() => {
+    (async () => {
+      if (!threadsQ.data) return;
+      const { threads } = threadsQ.data;
+      if (threads.length > 0) {
+        setCurrentThreadId(threads[0].id);
+      } else {
+        const { id } = await createThread();
+        qc.invalidateQueries({ queryKey: ["threads"] });
+        setCurrentThreadId(id);
+      }
+    })();
+  }, [threadsQ.data, qc]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -387,7 +402,7 @@ function ChatPage() {
     } catch (err: any) {
       console.error("Microphone access error:", err);
       setError("Could not access microphone. Please grant permission.");
-      setIsRecording(false);
+      setIsTyping(false);
     }
   };
 
@@ -409,7 +424,8 @@ function ChatPage() {
             try {
               const { id } = await createThread();
               qc.invalidateQueries({ queryKey: ["threads"] });
-              navigate({ to: "/chat/$threadId", params: { threadId: id } });
+              setCurrentThreadId(id);
+              setMessages([]);
             } catch (err: any) {
               console.error("Create thread error:", err);
             }
@@ -420,19 +436,27 @@ function ChatPage() {
         </Button>
         <div className="flex-1 overflow-y-auto space-y-1">
           {threadsQ.data?.threads.map((t: any) => (
-            <div key={t.id} className={`group flex items-center gap-1 rounded-lg pr-1 ${t.id === threadId ? "bg-secondary" : "hover:bg-secondary/60"}`}>
-              <Link
-                to="/chat/$threadId" params={{ threadId: t.id }}
-                className="flex-1 min-w-0 px-2.5 py-2 text-sm truncate"
+            <div key={t.id} className={`group flex items-center gap-1 rounded-lg pr-1 ${t.id === currentThreadId ? "bg-secondary" : "hover:bg-secondary/60"}`}>
+              <button
+                onClick={() => {
+                  setCurrentThreadId(t.id);
+                  setMessages([]);
+                }}
+                className="flex-1 min-w-0 px-2.5 py-2 text-sm truncate text-left"
               >
                 {t.title}
-              </Link>
+              </button>
               <button
                 onClick={async () => {
                   try {
                     await deleteThread({ data: { id: t.id } });
                     qc.invalidateQueries({ queryKey: ["threads"] });
-                    if (t.id === threadId) navigate({ to: "/chat" });
+                    if (t.id === currentThreadId) {
+                      const { threads } = await listThreads();
+                      if (threads.length > 0) {
+                        setCurrentThreadId(threads[0].id);
+                      }
+                    }
                   } catch (err: any) {
                     console.error("Delete thread error:", err);
                   }
