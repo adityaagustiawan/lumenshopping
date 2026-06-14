@@ -225,3 +225,5 @@ function categoryEmoji(slug: string) {
     pets: "🐾"
   }[slug] ?? "🛍️";
 }
+
+// Marquee added at the top with real e-commerce logos

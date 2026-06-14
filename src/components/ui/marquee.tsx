@@ -40,3 +40,5 @@ export function Marquee({
     </div>
   )
 }
+
+// Marquee with e-commerce logos
